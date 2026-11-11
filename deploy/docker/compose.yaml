@@ -1,0 +1,52 @@
+# Example deployment of the Diz bridge behind a TLS reverse proxy (e.g. Caddy)
+# that shares an external Docker network with it.
+#
+#   clients ──HTTPS 443──▶ reverse proxy ──HTTP──▶ diz-bridge:8787   (no published TCP port)
+#   lamps   ──UDP──▶ ${LAN_IP}:38900 ──────────────▶ diz-bridge:38900  (status pushes)
+#
+# Caddyfile:
+#   lights.example.com {
+#       reverse_proxy diz-bridge:8787
+#   }
+#
+# Setup: copy .env.example to .env next to this file, replace every CHANGEME,
+# then `docker compose up -d`.
+
+name: diz
+
+services:
+  diz-bridge:
+    image: diz-bridge:0.2.0
+    build:
+      context: ../..            # root of the diz repository (where the Dockerfile is)
+    container_name: diz-bridge
+    restart: unless-stopped
+    environment:
+      DIZ_API_TOKEN: ${DIZ_API_TOKEN:?set DIZ_API_TOKEN in .env}
+      # Lamps are told to push their status to this address. It must be the
+      # host's LAN IP: inside the container the bridge only sees a 172.x
+      # address the lamps can't reach.
+      DIZ_ADVERTISE_IP: ${LAN_IP:?set LAN_IP in .env}
+      # Broadcast discovery doesn't leave Docker's network, so list the lamps.
+      DIZ_BULBS: ${DIZ_BULBS:?set DIZ_BULBS in .env}
+    ports:
+      # Lamps always push to UDP 38900 (fixed in their firmware). Published on
+      # the LAN address only, so it isn't reachable via the tailnet.
+      - "${LAN_IP}:38900:38900/udp"
+    volumes:
+      - diz-data:/data          # lights.json: light names and known lamps
+    networks:
+      - proxy
+    mem_limit: 64m              # uses ~5-15 MB
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  proxy:
+    external: true
+    name: proxy                 # the network your reverse proxy is on
+
+volumes:
+  diz-data:

@@ -1,0 +1,24 @@
+# Dart / Flutter
+.dart_tool/
+.packages
+build/
+coverage/
+*.iml
+.idea/
+
+# Release output
+dist/
+
+# Local bridge state when running in development
+bridge/diz-state/
+
+# Secrets must never be committed
+*.jks
+*.keystore
+key.properties
+.env
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db

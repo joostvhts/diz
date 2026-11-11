@@ -1,0 +1,12 @@
+name: diz_core
+description: Shared models and API types for the Diz bridge and app. Pure Dart, web-safe (no dart:io).
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.11.0
+
+resolution: workspace
+dev_dependencies:
+  lints: ^6.1.0
+  test: ^1.30.0

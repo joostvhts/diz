@@ -1,0 +1,24 @@
+name: diz_bridge
+description: Diz bridge - controls WiZ lights over the local network and exposes a small HTTP API.
+version: 0.2.0
+publish_to: none
+
+environment:
+  sdk: ^3.11.0
+
+resolution: workspace
+
+executables:
+  diz_bridge:
+
+dependencies:
+  args: ^2.7.0
+  diz_core:
+    path: ../packages/diz_core
+  shelf: ^1.4.3
+  shelf_router: ^1.1.5
+  shelf_static: ^1.2.0
+dev_dependencies:
+  http: ^1.6.0
+  lints: ^6.1.0
+  test: ^1.30.0
