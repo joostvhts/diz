@@ -87,13 +87,20 @@ PilotReading parsePilot(Map<String, Object?> result) {
   final g = intOf('g');
   final b = intOf('b');
 
+  final scene = sceneId != null && sceneId > 0 ? sceneId : null;
+
+  // The colour the bulb reports decides the mode. Some WiZ scenes are static
+  // whites that report their colour too: the WiZ app's white presets come back
+  // as {"sceneId": 11, "temp": 2700} (Warm white) or {"sceneId": 13,
+  // "temp": 6500} (Cool white). Only scenes without colour data (Fireplace,
+  // Ocean, ...) are ColorMode.scene. The scene ID is kept in every mode.
   final ColorMode mode;
-  if (sceneId != null && sceneId > 0) {
-    mode = ColorMode.scene;
-  } else if (temp != null && temp > 0) {
+  if (temp != null && temp > 0) {
     mode = ColorMode.white;
   } else if (r != null && g != null && b != null) {
     mode = ColorMode.rgb;
+  } else if (scene != null) {
+    mode = ColorMode.scene;
   } else {
     mode = ColorMode.unknown;
   }
@@ -104,7 +111,7 @@ PilotReading parsePilot(Map<String, Object?> result) {
     mode: mode,
     rgb: mode == ColorMode.rgb ? Rgb(r!.clamp(0, 255), g!.clamp(0, 255), b!.clamp(0, 255)) : null,
     kelvin: mode == ColorMode.white ? temp : null,
-    sceneId: mode == ColorMode.scene ? sceneId : null,
+    sceneId: scene,
   );
   return (state: state, rssi: intOf('rssi'), mac: result['mac'] as String?);
 }
