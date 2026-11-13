@@ -1,0 +1,22 @@
+name: Feature request
+description: An idea for Diz.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The roadmap lives in the [open issues](https://github.com/joostvhts/diz/issues). If your idea is already there, add a 👍 or a comment to that issue instead.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What do you want to do?
+      description: The situation, and what you'd like Diz to do in it.
+    validations:
+      required: true
+
+  - type: textarea
+    id: idea
+    attributes:
+      label: How could it work?
+      description: Optional. Sketches, apps that already do it well, the bulbs you'd use it with.
