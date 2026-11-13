@@ -1,4 +1,4 @@
-package nl.joost.diz
+package nl.joostvhts.diz
 
 import io.flutter.embedding.android.FlutterActivity
 

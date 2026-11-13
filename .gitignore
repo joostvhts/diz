@@ -19,6 +19,11 @@ key.properties
 .env
 !.env.example
 
+# Editors: personal settings stay local; shared launch configs may be committed
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+
 # OS
 .DS_Store
 Thumbs.db
