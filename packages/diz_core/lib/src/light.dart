@@ -12,7 +12,8 @@ enum ColorMode {
   /// RGB color, described by [LightState.rgb].
   rgb,
 
-  /// A built-in WiZ scene (Fireplace, Ocean, ...), described by [LightState.sceneId].
+  /// A built-in WiZ scene that reports no colour of its own (Fireplace,
+  /// Ocean, ...), described by [LightState.sceneId].
   scene,
 
   /// Not reported or not understood.
@@ -172,6 +173,11 @@ class LightState {
   final ColorMode mode;
   final Rgb? rgb;
   final int? kelvin;
+
+  /// The built-in WiZ scene the light is running, if any. Not only in
+  /// [ColorMode.scene]: static scenes such as Warm white (11) and Cool white
+  /// (13) report their colour too, so they read as [ColorMode.white] with
+  /// this set.
   final int? sceneId;
 
   /// Returns the state this light will have after [command] is applied.
