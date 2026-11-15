@@ -7,5 +7,6 @@ environment:
 
 workspace:
   - packages/diz_core
+  - packages/diz_wiz
   - bridge
   - app

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'wiz_protocol.dart';
+import 'protocol.dart';
 
 /// Where a bulb can be reached.
 class WizEndpoint {

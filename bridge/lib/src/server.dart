@@ -1,13 +1,12 @@
 import 'dart:convert';
 
 import 'package:diz_core/diz_core.dart';
+import 'package:diz_wiz/diz_wiz.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:shelf_static/shelf_static.dart';
 
-import 'registry.dart';
 import 'version.dart';
-import 'wiz/wiz_transport.dart';
 
 /// Builds the HTTP handler:
 /// * `/healthz` - unauthenticated liveness check for Docker / the reverse proxy;

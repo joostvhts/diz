@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:diz_bridge/diz_bridge.dart';
 import 'package:diz_core/diz_core.dart';
+import 'package:diz_wiz/diz_wiz.dart';
 import 'package:test/test.dart';
 
 void main() {

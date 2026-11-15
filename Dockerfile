@@ -21,10 +21,12 @@ WORKDIR /src
 # The workspace also lists the Flutter app, which isn't needed (or buildable) here.
 COPY pubspec.yaml pubspec.lock ./
 COPY packages/diz_core/pubspec.yaml packages/diz_core/
+COPY packages/diz_wiz/pubspec.yaml packages/diz_wiz/
 COPY bridge/pubspec.yaml bridge/
 RUN sed -i '/^  - app$/d' pubspec.yaml && dart pub get
 
 COPY packages/diz_core/ packages/diz_core/
+COPY packages/diz_wiz/ packages/diz_wiz/
 COPY bridge/ bridge/
 RUN case "$TARGETARCH" in \
       amd64) arch=x64 ;; \

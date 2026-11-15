@@ -2,9 +2,7 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:diz_core/diz_core.dart';
-
-import 'wiz/wiz_protocol.dart';
-import 'wiz/wiz_transport.dart';
+import 'package:diz_wiz/diz_wiz.dart';
 
 /// Bridge settings. Every option can be given as a flag or as an environment
 /// variable (flags win), so the same binary works under systemd

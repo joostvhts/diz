@@ -1,0 +1,17 @@
+name: diz_wiz
+description: Controls WiZ lights over the local network (UDP), for the Diz bridge and the Diz app. Uses dart:io, so not for the web.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.11.0
+
+resolution: workspace
+
+dependencies:
+  diz_core:
+    path: ../diz_core
+
+dev_dependencies:
+  lints: ^6.1.0
+  test: ^1.30.0
