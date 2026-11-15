@@ -1,5 +1,5 @@
-# Checks every pull request and every push to main. Both job names are meant
-# to be required status checks in the `main` ruleset.
+# Checks every pull request and every push to main. The three job names are
+# meant to be required status checks in the `main` ruleset.
 name: CI
 
 on:
@@ -9,6 +9,10 @@ on:
 
 permissions:
   contents: read
+
+env:
+  # The one place to change the Flutter version for CI.
+  FLUTTER_VERSION: 3.41.5
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -28,7 +32,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           channel: stable
-          flutter-version: 3.41.5
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - name: Get dependencies (whole workspace)
@@ -57,6 +61,36 @@ jobs:
         run: |
           flutter analyze
           flutter test
+
+  # Analyzing and testing never runs Gradle, so only this job notices when the
+  # Android Gradle plugin, Kotlin or Gradle versions stop working together.
+  android:
+    name: Android build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      # A release build, because that is what users install; it also runs the
+      # code shrinker. It needs no secrets: without a signing key it is signed
+      # with the debug key.
+      - name: Build the release APK
+        working-directory: app
+        run: flutter build apk --release
 
   docker:
     name: Docker image
