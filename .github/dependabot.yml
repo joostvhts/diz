@@ -1,0 +1,36 @@
+# Weekly dependency update PRs. CI runs on each one; merge when it's green.
+version: 2
+updates:
+  # The workspace root holds the only pubspec.lock (core, bridge and app).
+  - package-ecosystem: pub
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      dart-packages:
+        update-types: [minor, patch]
+
+  # Android Gradle plugin and Kotlin versions for the app.
+  - package-ecosystem: gradle
+    directory: /app/android
+    schedule:
+      interval: weekly
+    groups:
+      android-build:
+        patterns: ["*"]
+
+  # Actions are pinned to commit SHAs; Dependabot updates the SHA and the
+  # version comment together.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+
+  # The Dart base image in the root Dockerfile (tag and digest).
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly

@@ -1,0 +1,75 @@
+name: Bug report
+description: Something in Diz doesn't work as it should.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Leave out your API token. Sharing IP addresses is up to you; masking them is fine.
+        For a security problem, use the Security tab instead (see SECURITY.md).
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open Diz
+        2. Tap ...
+
+  - type: input
+    id: app-version
+    attributes:
+      label: Diz app version
+      description: Android Settings → Apps → Diz shows it.
+      placeholder: "0.2.0"
+    validations:
+      required: true
+
+  - type: input
+    id: phone
+    attributes:
+      label: Phone and Android version
+      placeholder: Pixel 8, Android 16
+    validations:
+      required: true
+
+  - type: dropdown
+    id: setup
+    attributes:
+      label: How do you run the bridge?
+      # Add "No bridge (phone only)" once standalone mode (#4) ships.
+      options:
+        - Docker
+        - systemd package (install.sh)
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: bridge-version
+    attributes:
+      label: Bridge version
+      description: Diz → Settings shows it under the bridge address.
+      placeholder: "0.2.0"
+
+  - type: textarea
+    id: bulbs
+    attributes:
+      label: Bulbs involved
+      description: Model and firmware of each. Diz → Settings lists them under every light.
+      placeholder: ESP01_SHRGB1C_31 · fw 1.33.1
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Bridge logs
+      description: From around the time it happened, via `docker compose logs diz-bridge` or `journalctl -u diz-bridge`.
+      render: text

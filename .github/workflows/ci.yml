@@ -1,0 +1,73 @@
+# Checks every pull request and every push to main. Both job names are meant
+# to be required status checks in the `main` ruleset.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  test:
+    name: Analyze and test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Flutter brings its own Dart SDK, which the bridge and core use too.
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          flutter-version: 3.41.5
+          cache: true
+
+      - name: Get dependencies (whole workspace)
+        run: flutter pub get
+
+      - name: Shared core
+        working-directory: packages/diz_core
+        run: |
+          dart analyze --fatal-infos
+          dart test
+
+      - name: Bridge
+        working-directory: bridge
+        run: |
+          dart analyze --fatal-infos
+          dart test
+
+      - name: App
+        working-directory: app
+        run: |
+          flutter analyze
+          flutter test
+
+  docker:
+    name: Docker image
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build for amd64
+        run: docker build --platform linux/amd64 -t diz-bridge:ci .
+
+      - name: Run the binary
+        run: docker run --rm diz-bridge:ci --help
+
+      # The Dockerfile cross-compiles, so arm64 (Raspberry Pi) builds here
+      # without emulation. Nothing can run it on this runner, though.
+      - name: Build for arm64
+        run: docker build --platform linux/arm64 -t diz-bridge:ci-arm64 .

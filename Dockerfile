@@ -10,10 +10,10 @@
 # machine needs no emulation. The final image is `scratch` plus the few shared
 # libraries a Dart AOT binary needs; it has no shell.
 
-# Pinned by tag and digest. Bump both together.
-ARG DART_IMAGE=dart:3.11.6@sha256:2ed474dc085f267ca692261ce35b23a0ae039e317beebef854be886c8b57832d
-
-FROM --platform=$BUILDPLATFORM ${DART_IMAGE} AS build
+# The Dart image is pinned by tag and digest, written out in both FROM lines
+# (build and runtime must match). Dependabot only updates literal FROM lines,
+# and bumps both in one PR.
+FROM --platform=$BUILDPLATFORM dart:3.11.6@sha256:2ed474dc085f267ca692261ce35b23a0ae039e317beebef854be886c8b57832d AS build
 ARG TARGETARCH
 WORKDIR /src
 
@@ -39,7 +39,7 @@ RUN case "$TARGETARCH" in \
 
 # Shared libraries (glibc etc.) for the *target* architecture. Nothing runs in
 # this stage, so cross-building needs no emulation here either.
-FROM ${DART_IMAGE} AS runtime
+FROM dart:3.11.6@sha256:2ed474dc085f267ca692261ce35b23a0ae039e317beebef854be886c8b57832d AS runtime
 
 FROM scratch
 LABEL org.opencontainers.image.title="diz-bridge" \
