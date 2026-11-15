@@ -40,6 +40,12 @@ jobs:
           dart analyze --fatal-infos
           dart test
 
+      - name: WiZ protocol
+        working-directory: packages/diz_wiz
+        run: |
+          dart analyze --fatal-infos
+          dart test
+
       - name: Bridge
         working-directory: bridge
         run: |

@@ -133,6 +133,7 @@ A Dart [pub workspace](https://dart.dev/tools/pub/workspaces):
 
 ```
 packages/diz_core/   shared models and API types (pure Dart, web-safe)
+packages/diz_wiz/    the WiZ side: UDP protocol, discovery, push, registry of lights (dart:io)
 bridge/              the bridge (Dart, shelf); tool/fake_bulb.dart simulates bulbs
 app/                 the Flutter app (Android + web)
 deploy/docker/       example compose.yaml and .env.example
@@ -147,6 +148,7 @@ flutter pub get                                   # once, at the repo root
 
 # Tests
 (cd packages/diz_core && dart test)
+(cd packages/diz_wiz && dart test)
 (cd bridge && dart test)
 (cd app && flutter test)
 

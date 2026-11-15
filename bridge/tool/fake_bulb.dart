@@ -8,7 +8,7 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:diz_bridge/src/testing/fake_bulb.dart';
+import 'package:diz_wiz/testing.dart';
 
 Future<void> main(List<String> arguments) async {
   final parser = ArgParser()

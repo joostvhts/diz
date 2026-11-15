@@ -45,7 +45,7 @@ Future<void> main(List<String> arguments) async {
 
   final registry = Registry(
     transport: UdpWizTransport(),
-    stateFile: config.stateFile,
+    store: FileLightStore(config.stateFile),
     staticBulbs: config.bulbs,
     broadcast: config.broadcast,
     advertiseAddress: config.advertise,

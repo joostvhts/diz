@@ -5,8 +5,9 @@ import 'dart:io';
 import 'package:diz_core/diz_core.dart';
 
 import 'command_queue.dart';
-import 'wiz/wiz_protocol.dart';
-import 'wiz/wiz_transport.dart';
+import 'light_store.dart';
+import 'protocol.dart';
+import 'transport.dart';
 
 typedef Log = void Function(String message);
 
@@ -18,7 +19,7 @@ class UnknownLightException implements Exception {
   String toString() => 'Unknown light: $id';
 }
 
-/// Everything the bridge knows about one bulb.
+/// Everything the registry knows about one bulb.
 class BulbRecord {
   BulbRecord({
     required this.mac,
@@ -101,7 +102,7 @@ class BulbRecord {
 class Registry {
   Registry({
     required WizTransport transport,
-    String? stateFile,
+    LightStore? store,
     List<WizEndpoint> staticBulbs = const [],
     WizEndpoint? broadcast,
     InternetAddress? advertiseAddress,
@@ -113,14 +114,15 @@ class Registry {
     this.discoveryListen = const Duration(seconds: 2),
     this.rediscoverAfter = const Duration(minutes: 1),
   })  : _transport = transport,
-        _stateFile = stateFile,
+        _store = store,
         _staticBulbs = staticBulbs,
         _broadcast = broadcast,
         _advertise = advertiseAddress,
         _log = log ?? ((_) {});
 
   final WizTransport _transport;
-  final String? _stateFile;
+  /// Null keeps everything in memory (lost on restart).
+  final LightStore? _store;
   final List<WizEndpoint> _staticBulbs;
   final WizEndpoint? _broadcast;
 
@@ -161,34 +163,30 @@ class Registry {
   // ---------------------------------------------------------------- storage
 
   Future<void> load() async {
-    final path = _stateFile;
-    if (path == null) return;
-    final file = File(path);
-    if (!await file.exists()) return;
+    final store = _store;
+    if (store == null) return;
     try {
-      final json = jsonDecode(await file.readAsString()) as Map<String, Object?>;
+      final text = await store.read();
+      if (text == null) return;
+      final json = jsonDecode(text) as Map<String, Object?>;
       for (final item in (json['lights'] as List? ?? const [])) {
         final record = BulbRecord.fromJson((item as Map).cast<String, Object?>());
         _bulbs[record.mac] = record;
       }
-      _log('Loaded ${_bulbs.length} known light(s) from $path');
+      _log('Loaded ${_bulbs.length} known light(s) from $store');
     } catch (e) {
-      _log('Ignoring unreadable state file $path: $e');
+      _log('Ignoring unreadable saved lights in $store: $e');
     }
   }
 
   Future<void> _save() async {
-    final path = _stateFile;
-    if (path == null) return;
-    final file = File(path);
-    await file.parent.create(recursive: true);
-    final tmp = File('$path.tmp');
+    final store = _store;
+    if (store == null) return;
     const encoder = JsonEncoder.withIndent('  ');
-    await tmp.writeAsString(encoder.convert({
+    await store.write(encoder.convert({
       'version': 1,
       'lights': [for (final r in _bulbs.values) r.toJson()],
     }));
-    await tmp.rename(path);
   }
 
   // -------------------------------------------------------------- discovery

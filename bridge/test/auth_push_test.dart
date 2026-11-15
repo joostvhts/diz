@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:diz_bridge/diz_bridge.dart';
-import 'package:diz_bridge/src/testing/fake_bulb.dart';
 import 'package:diz_core/diz_core.dart';
+import 'package:diz_wiz/testing.dart';
 import 'package:http/http.dart' as http;
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:test/test.dart';
