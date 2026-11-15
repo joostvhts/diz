@@ -16,7 +16,7 @@ name: diz
 
 services:
   diz-bridge:
-    image: diz-bridge:0.2.0
+    image: diz-bridge:0.2.1
     build:
       context: ../..            # root of the diz repository (where the Dockerfile is)
     container_name: diz-bridge
