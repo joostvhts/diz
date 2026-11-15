@@ -13,7 +13,7 @@
 # The Dart image is pinned by tag and digest, written out in both FROM lines
 # (build and runtime must match). Dependabot only updates literal FROM lines,
 # and bumps both in one PR.
-FROM --platform=$BUILDPLATFORM dart:3.11.6@sha256:2ed474dc085f267ca692261ce35b23a0ae039e317beebef854be886c8b57832d AS build
+FROM --platform=$BUILDPLATFORM dart:3.15.0-118.1.beta@sha256:47460f87d4c1a8424dec7a7a0d8fef5312412fc05560349d7058eb4e42b995c0 AS build
 ARG TARGETARCH
 WORKDIR /src
 
@@ -41,7 +41,7 @@ RUN case "$TARGETARCH" in \
 
 # Shared libraries (glibc etc.) for the *target* architecture. Nothing runs in
 # this stage, so cross-building needs no emulation here either.
-FROM dart:3.11.6@sha256:2ed474dc085f267ca692261ce35b23a0ae039e317beebef854be886c8b57832d AS runtime
+FROM dart:3.15.0-118.1.beta@sha256:47460f87d4c1a8424dec7a7a0d8fef5312412fc05560349d7058eb4e42b995c0 AS runtime
 
 FROM scratch
 LABEL org.opencontainers.image.title="diz-bridge" \
