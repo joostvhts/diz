@@ -1,6 +1,6 @@
 name: diz_bridge
 description: Diz bridge - controls WiZ lights over the local network and exposes a small HTTP API.
-version: 0.2.0
+version: 0.2.1
 publish_to: none
 
 environment:

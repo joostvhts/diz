@@ -2,8 +2,8 @@
 #
 # Diz bridge: a small, non-root, multi-arch image (linux/arm64, linux/amd64).
 #
-#   docker build -t diz-bridge:0.2.0 .
-#   docker buildx build --platform linux/arm64 -t diz-bridge:0.2.0 .
+#   docker build -t diz-bridge:0.2.1 .
+#   docker buildx build --platform linux/arm64 -t diz-bridge:0.2.1 .
 #
 # The binary is cross-compiled on the build machine's own architecture
 # (dart compile exe --target-arch), so building the arm64 image on an x64
