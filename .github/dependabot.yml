@@ -1,7 +1,11 @@
 # Weekly dependency update PRs. CI runs on each one; merge when it's green.
+#
+# The toolchain is upgraded by hand, in one go: the Flutter version in ci.yml,
+# the Dart minor in the Dockerfile, and new majors of the Android build tools.
+# The `ignore` rules below keep Dependabot away from those.
 version: 2
 updates:
-  # The workspace root holds the only pubspec.lock (core, bridge and app).
+  # The workspace root holds the only pubspec.lock (core, WiZ, bridge and app).
   - package-ecosystem: pub
     directory: /
     schedule:
@@ -9,8 +13,14 @@ updates:
     groups:
       dart-packages:
         update-types: [minor, patch]
+    ignore:
+      # Flutter's flutter_test pins test_api, and that decides which `test`
+      # versions can resolve. Dependabot resolves with the newest Flutter, not
+      # the one pinned in ci.yml, so its `test` bumps fail here. Run
+      # `flutter pub upgrade test` after a Flutter upgrade instead.
+      - dependency-name: test
 
-  # Android Gradle plugin and Kotlin versions for the app.
+  # Android Gradle plugin, Kotlin and Gradle wrapper versions for the app.
   - package-ecosystem: gradle
     directory: /app/android
     schedule:
@@ -18,6 +28,12 @@ updates:
     groups:
       android-build:
         patterns: ["*"]
+    ignore:
+      # A new major needs a migration and a Flutter version that supports it.
+      # For example, Android Gradle plugin 9 rejects the kotlin-android plugin
+      # that this app still applies.
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
 
   # Actions are pinned to commit SHAs; Dependabot updates the SHA and the
   # version comment together.
@@ -34,3 +50,11 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    ignore:
+      # Patch releases only. Dependabot can take Dart's beta tags (such as
+      # 3.15.0-118.1.beta) for releases, and those always belong to the next
+      # minor. A new stable minor comes in with the Flutter upgrade.
+      - dependency-name: dart
+        update-types:
+          - "version-update:semver-minor"
+          - "version-update:semver-major"
