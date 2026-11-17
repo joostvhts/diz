@@ -141,7 +141,7 @@ deploy/pkg/          systemd install package; deploy/build_release.sh builds it
 Dockerfile           the bridge image
 ```
 
-Requires the Flutter SDK (3.41+, which includes Dart 3.11+).
+Requires the Flutter SDK (3.50+, which includes Dart 3.14+).
 
 ```sh
 flutter pub get                                   # once, at the repo root

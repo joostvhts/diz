@@ -3,7 +3,7 @@ description: Workspace root for Diz (bridge, shared core, Flutter app).
 publish_to: none
 
 environment:
-  sdk: ^3.11.0
+  sdk: ^3.14.0
 
 workspace:
   - packages/diz_core

@@ -12,7 +12,7 @@ permissions:
 
 env:
   # The one place to change the Flutter version for CI.
-  FLUTTER_VERSION: 3.41.5
+  FLUTTER_VERSION: 3.50.0
 
 concurrency:
   group: ci-${{ github.ref }}
