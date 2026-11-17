@@ -30,8 +30,8 @@ updates:
         patterns: ["*"]
     ignore:
       # A new major needs a migration and a Flutter version that supports it.
-      # For example, Android Gradle plugin 9 rejects the kotlin-android plugin
-      # that this app still applies.
+      # Follow the files Flutter's own app template generates; for example, the
+      # move to Android Gradle plugin 9 dropped the kotlin-android plugin.
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
 

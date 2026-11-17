@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A slider whose track is a color gradient (used for brightness and color
 /// temperature). Reports whole numbers.

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:diz_core/diz_core.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../api/bridge_client.dart';
 import '../state/lights_controller.dart';

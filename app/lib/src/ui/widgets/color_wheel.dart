@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A hue/saturation color wheel: hue around the circle, saturation from the
 /// white center to the edge. Brightness is controlled separately, like in

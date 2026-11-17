@@ -1,5 +1,5 @@
 import 'package:diz_core/diz_core.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 Color colorOfRgb(Rgb rgb) => Color.fromARGB(255, rgb.r, rgb.g, rgb.b);
 

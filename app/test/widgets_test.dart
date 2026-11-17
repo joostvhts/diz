@@ -5,8 +5,8 @@ import 'package:diz/src/state/lights_controller.dart';
 import 'package:diz/src/ui/home_screen.dart';
 import 'package:diz/src/ui/widgets/color_wheel.dart';
 import 'package:diz_core/diz_core.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'fake_api.dart';

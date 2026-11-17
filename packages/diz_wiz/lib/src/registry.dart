@@ -101,10 +101,10 @@ class BulbRecord {
 /// Owns the set of known bulbs: discovery, persistence, state reads and commands.
 class Registry {
   Registry({
-    required WizTransport transport,
-    LightStore? store,
-    List<WizEndpoint> staticBulbs = const [],
-    WizEndpoint? broadcast,
+    required this._transport,
+    this._store,
+    this._staticBulbs = const [],
+    this._broadcast,
     InternetAddress? advertiseAddress,
     Log? log,
     this.commandAttempts = 3,
@@ -113,11 +113,7 @@ class Registry {
     this.readTimeout = const Duration(milliseconds: 200),
     this.discoveryListen = const Duration(seconds: 2),
     this.rediscoverAfter = const Duration(minutes: 1),
-  })  : _transport = transport,
-        _store = store,
-        _staticBulbs = staticBulbs,
-        _broadcast = broadcast,
-        _advertise = advertiseAddress,
+  })  : _advertise = advertiseAddress,
         _log = log ?? ((_) {});
 
   final WizTransport _transport;
