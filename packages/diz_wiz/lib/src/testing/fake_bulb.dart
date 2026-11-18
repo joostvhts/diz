@@ -80,8 +80,11 @@ class FakeBulb {
   Map<String, Object?> _handle(Map<String, Object?> request) {
     final method = request['method'] as String?;
     final params = (request['params'] as Map?)?.cast<String, Object?>() ?? const {};
-    Map<String, Object?> ok(Map<String, Object?> result) =>
-        {'method': method, 'env': 'pro', 'result': result};
+    Map<String, Object?> ok(Map<String, Object?> result) => {
+      'method': method,
+      'env': 'pro',
+      'result': result,
+    };
 
     switch (method) {
       case 'getPilot':
@@ -126,14 +129,17 @@ class FakeBulb {
   }
 
   /// Simulates the announcement a bulb sends after booting.
-  void sendFirstBeat() =>
-      _sendToTarget({'method': 'firstBeat', 'env': 'pro', 'params': {'mac': mac, 'fwVersion': firmware}});
+  void sendFirstBeat() => _sendToTarget({
+    'method': 'firstBeat',
+    'env': 'pro',
+    'params': {'mac': mac, 'fwVersion': firmware},
+  });
 
   void _push() => _sendToTarget({
-        'method': 'syncPilot',
-        'env': 'pro',
-        'params': {'mac': mac, 'rssi': -55, 'src': 'udp', ...pilot},
-      });
+    'method': 'syncPilot',
+    'env': 'pro',
+    'params': {'mac': mac, 'rssi': -55, 'src': 'udp', ...pilot},
+  });
 
   void _sendToTarget(Map<String, Object?> message) {
     final target = pushTarget;

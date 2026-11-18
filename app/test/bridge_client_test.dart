@@ -9,8 +9,13 @@ import 'package:http/testing.dart';
 void main() {
   final base = Uri.parse('https://lights.example.com/');
   final healthJson = jsonEncode(
-      const BridgeHealth(name: 'diz-bridge', version: '0.2.0', apiVersion: dizApiVersion, lightCount: 0)
-          .toJson());
+    const BridgeHealth(
+      name: 'diz-bridge',
+      version: '0.2.0',
+      apiVersion: dizApiVersion,
+      lightCount: 0,
+    ).toJson(),
+  );
 
   test('sends the bearer token on every request', () async {
     final seen = <String?>[];
@@ -35,12 +40,16 @@ void main() {
   });
 
   test('a 401 becomes an unauthorized BridgeException', () async {
-    final client = MockClient((_) async => http.Response('{"error":"Missing or wrong access token"}', 401));
+    final client = MockClient(
+      (_) async => http.Response('{"error":"Missing or wrong access token"}', 401),
+    );
     await expectLater(
       HttpBridgeClient(base, token: 'wrong-token-0123456789', client: client).lights(),
-      throwsA(isA<BridgeException>()
-          .having((e) => e.isUnauthorized, 'isUnauthorized', isTrue)
-          .having((e) => e.message, 'message', contains('rejected the access token'))),
+      throwsA(
+        isA<BridgeException>()
+            .having((e) => e.isUnauthorized, 'isUnauthorized', isTrue)
+            .having((e) => e.message, 'message', contains('rejected the access token')),
+      ),
     );
   });
 

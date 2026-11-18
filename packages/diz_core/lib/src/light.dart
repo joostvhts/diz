@@ -72,12 +72,14 @@ class Capabilities {
 
   /// Full color + tunable white bulb. Used when the model is unknown,
   /// because it is by far the most common WiZ bulb.
-  static const Capabilities fullColor =
-      Capabilities(dimmable: true, color: true, tunableWhite: true);
+  static const Capabilities fullColor = Capabilities(
+    dimmable: true,
+    color: true,
+    tunableWhite: true,
+  );
 
   /// Nothing supported (empty group).
-  static const Capabilities none =
-      Capabilities(dimmable: false, color: false, tunableWhite: false);
+  static const Capabilities none = Capabilities(dimmable: false, color: false, tunableWhite: false);
 
   final bool dimmable;
   final bool color;
@@ -112,20 +114,20 @@ class Capabilities {
   }
 
   factory Capabilities.fromJson(Map<String, Object?> json) => Capabilities(
-        dimmable: json['dimmable'] as bool? ?? true,
-        color: json['color'] as bool? ?? false,
-        tunableWhite: json['tunableWhite'] as bool? ?? false,
-        kelvinMin: (json['kelvinMin'] as num?)?.toInt() ?? 2200,
-        kelvinMax: (json['kelvinMax'] as num?)?.toInt() ?? 6500,
-      );
+    dimmable: json['dimmable'] as bool? ?? true,
+    color: json['color'] as bool? ?? false,
+    tunableWhite: json['tunableWhite'] as bool? ?? false,
+    kelvinMin: (json['kelvinMin'] as num?)?.toInt() ?? 2200,
+    kelvinMax: (json['kelvinMax'] as num?)?.toInt() ?? 6500,
+  );
 
   Map<String, Object?> toJson() => {
-        'dimmable': dimmable,
-        'color': color,
-        'tunableWhite': tunableWhite,
-        'kelvinMin': kelvinMin,
-        'kelvinMax': kelvinMax,
-      };
+    'dimmable': dimmable,
+    'color': color,
+    'tunableWhite': tunableWhite,
+    'kelvinMin': kelvinMin,
+    'kelvinMax': kelvinMax,
+  };
 
   /// Everything that at least one of the two supports (used for group controls).
   Capabilities union(Capabilities other) {
@@ -211,22 +213,22 @@ class LightState {
   }
 
   factory LightState.fromJson(Map<String, Object?> json) => LightState(
-        on: json['on'] as bool? ?? false,
-        brightness: (json['brightness'] as num?)?.toInt() ?? maxBrightness,
-        mode: ColorMode.fromName(json['mode'] as String?),
-        rgb: json['rgb'] == null ? null : Rgb.fromJson(json['rgb']),
-        kelvin: (json['kelvin'] as num?)?.toInt(),
-        sceneId: (json['sceneId'] as num?)?.toInt(),
-      );
+    on: json['on'] as bool? ?? false,
+    brightness: (json['brightness'] as num?)?.toInt() ?? maxBrightness,
+    mode: ColorMode.fromName(json['mode'] as String?),
+    rgb: json['rgb'] == null ? null : Rgb.fromJson(json['rgb']),
+    kelvin: (json['kelvin'] as num?)?.toInt(),
+    sceneId: (json['sceneId'] as num?)?.toInt(),
+  );
 
   Map<String, Object?> toJson() => {
-        'on': on,
-        'brightness': brightness,
-        'mode': mode.name,
-        if (rgb != null) 'rgb': rgb!.toJson(),
-        if (kelvin != null) 'kelvin': kelvin,
-        if (sceneId != null) 'sceneId': sceneId,
-      };
+    'on': on,
+    'brightness': brightness,
+    'mode': mode.name,
+    if (rgb != null) 'rgb': rgb!.toJson(),
+    if (kelvin != null) 'kelvin': kelvin,
+    if (sceneId != null) 'sceneId': sceneId,
+  };
 
   @override
   bool operator ==(Object other) =>
@@ -279,42 +281,42 @@ class Light {
   bool get isOn => online && (state?.on ?? false);
 
   Light copyWith({String? name, bool? online, LightState? state}) => Light(
-        id: id,
-        name: name ?? this.name,
-        online: online ?? this.online,
-        capabilities: capabilities,
-        ip: ip,
-        model: model,
-        firmware: firmware,
-        state: state ?? this.state,
-        rssi: rssi,
-      );
+    id: id,
+    name: name ?? this.name,
+    online: online ?? this.online,
+    capabilities: capabilities,
+    ip: ip,
+    model: model,
+    firmware: firmware,
+    state: state ?? this.state,
+    rssi: rssi,
+  );
 
   factory Light.fromJson(Map<String, Object?> json) => Light(
-        id: json['id'] as String,
-        name: json['name'] as String? ?? json['id'] as String,
-        online: json['online'] as bool? ?? false,
-        capabilities: json['capabilities'] is Map
-            ? Capabilities.fromJson((json['capabilities'] as Map).cast<String, Object?>())
-            : Capabilities.fullColor,
-        ip: json['ip'] as String?,
-        model: json['model'] as String?,
-        firmware: json['firmware'] as String?,
-        state: json['state'] is Map
-            ? LightState.fromJson((json['state'] as Map).cast<String, Object?>())
-            : null,
-        rssi: (json['rssi'] as num?)?.toInt(),
-      );
+    id: json['id'] as String,
+    name: json['name'] as String? ?? json['id'] as String,
+    online: json['online'] as bool? ?? false,
+    capabilities: json['capabilities'] is Map
+        ? Capabilities.fromJson((json['capabilities'] as Map).cast<String, Object?>())
+        : Capabilities.fullColor,
+    ip: json['ip'] as String?,
+    model: json['model'] as String?,
+    firmware: json['firmware'] as String?,
+    state: json['state'] is Map
+        ? LightState.fromJson((json['state'] as Map).cast<String, Object?>())
+        : null,
+    rssi: (json['rssi'] as num?)?.toInt(),
+  );
 
   Map<String, Object?> toJson() => {
-        'id': id,
-        'name': name,
-        'online': online,
-        'capabilities': capabilities.toJson(),
-        if (ip != null) 'ip': ip,
-        if (model != null) 'model': model,
-        if (firmware != null) 'firmware': firmware,
-        if (state != null) 'state': state!.toJson(),
-        if (rssi != null) 'rssi': rssi,
-      };
+    'id': id,
+    'name': name,
+    'online': online,
+    'capabilities': capabilities.toJson(),
+    if (ip != null) 'ip': ip,
+    if (model != null) 'model': model,
+    if (firmware != null) 'firmware': firmware,
+    if (state != null) 'state': state!.toJson(),
+    if (rssi != null) 'rssi': rssi,
+  };
 }

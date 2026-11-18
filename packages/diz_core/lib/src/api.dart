@@ -24,18 +24,18 @@ class BridgeHealth {
   bool get isCompatible => apiVersion == dizApiVersion;
 
   factory BridgeHealth.fromJson(Map<String, Object?> json) => BridgeHealth(
-        name: json['name'] as String? ?? 'unknown',
-        version: json['version'] as String? ?? 'unknown',
-        apiVersion: (json['apiVersion'] as num?)?.toInt() ?? 0,
-        lightCount: (json['lightCount'] as num?)?.toInt() ?? 0,
-      );
+    name: json['name'] as String? ?? 'unknown',
+    version: json['version'] as String? ?? 'unknown',
+    apiVersion: (json['apiVersion'] as num?)?.toInt() ?? 0,
+    lightCount: (json['lightCount'] as num?)?.toInt() ?? 0,
+  );
 
   Map<String, Object?> toJson() => {
-        'name': name,
-        'version': version,
-        'apiVersion': apiVersion,
-        'lightCount': lightCount,
-      };
+    'name': name,
+    'version': version,
+    'apiVersion': apiVersion,
+    'lightCount': lightCount,
+  };
 }
 
 /// Response of `POST /api/group/state`.
@@ -49,17 +49,17 @@ class GroupResult {
   final List<String> failed;
 
   factory GroupResult.fromJson(Map<String, Object?> json) => GroupResult(
-        lights: lightsFromJson(json['lights']),
-        failed: (json['failed'] as List? ?? const []).cast<String>(),
-      );
+    lights: lightsFromJson(json['lights']),
+    failed: (json['failed'] as List? ?? const []).cast<String>(),
+  );
 
   Map<String, Object?> toJson() => {
-        'lights': [for (final l in lights) l.toJson()],
-        'failed': failed,
-      };
+    'lights': [for (final l in lights) l.toJson()],
+    'failed': failed,
+  };
 }
 
 List<Light> lightsFromJson(Object? json) => [
-      for (final item in (json as List? ?? const []))
-        Light.fromJson((item as Map).cast<String, Object?>()),
-    ];
+  for (final item in (json as List? ?? const []))
+    Light.fromJson((item as Map).cast<String, Object?>()),
+];

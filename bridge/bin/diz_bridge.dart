@@ -16,8 +16,10 @@ Future<void> main(List<String> arguments) async {
         ..writeln('Usage: diz-bridge [options]')
         ..writeln('       diz-bridge healthcheck    exit 0 if the bridge on --port answers\n')
         ..writeln(parser.usage)
-        ..writeln('\nAuthentication: set DIZ_API_TOKEN (or DIZ_API_TOKEN_FILE) to require\n'
-            '"Authorization: Bearer <token>" on /api. /healthz is always open.');
+        ..writeln(
+          '\nAuthentication: set DIZ_API_TOKEN (or DIZ_API_TOKEN_FILE) to require\n'
+          '"Authorization: Bearer <token>" on /api. /healthz is always open.',
+        );
       return;
     }
     if (args.rest.isNotEmpty) {
@@ -39,8 +41,10 @@ Future<void> main(List<String> arguments) async {
 
   log('diz-bridge $bridgeVersion starting ($config)');
   if (config.apiToken == null) {
-    log('WARNING: DIZ_API_TOKEN is not set. Anyone who can reach port ${config.port} '
-        'can control your lights.');
+    log(
+      'WARNING: DIZ_API_TOKEN is not set. Anyone who can reach port ${config.port} '
+      'can control your lights.',
+    );
   }
 
   final registry = Registry(
@@ -80,8 +84,10 @@ Future<void> main(List<String> arguments) async {
     try {
       await listener.start(port: config.pushPort);
       push = listener;
-      log('Push updates on: lights send changes to ${advertise.address}:$wizPushPort '
-          '(listening on UDP ${config.pushPort})');
+      log(
+        'Push updates on: lights send changes to ${advertise.address}:$wizPushPort '
+        '(listening on UDP ${config.pushPort})',
+      );
       pushTimer = Timer.periodic(pushKeepAlive, (_) => registry.registerPush());
     } on SocketException catch (e) {
       log('Push updates off: cannot listen on UDP ${config.pushPort} (${e.message}); polling only');

@@ -18,18 +18,19 @@ void main() {
   late Uri base;
 
   Registry newRegistry({WizEndpoint? broadcast, List<WizEndpoint>? staticBulbs}) => Registry(
-        transport: UdpWizTransport(),
-        store: FileLightStore('${stateDir.path}/lights.json'),
-        staticBulbs: staticBulbs ??
-            [
-              WizEndpoint(InternetAddress.loopbackIPv4, color.port),
-              WizEndpoint(InternetAddress.loopbackIPv4, white.port),
-            ],
-        broadcast: broadcast,
-        commandTimeout: const Duration(milliseconds: 60),
-        readTimeout: const Duration(milliseconds: 60),
-        discoveryListen: const Duration(milliseconds: 300),
-      );
+    transport: UdpWizTransport(),
+    store: FileLightStore('${stateDir.path}/lights.json'),
+    staticBulbs:
+        staticBulbs ??
+        [
+          WizEndpoint(InternetAddress.loopbackIPv4, color.port),
+          WizEndpoint(InternetAddress.loopbackIPv4, white.port),
+        ],
+    broadcast: broadcast,
+    commandTimeout: const Duration(milliseconds: 60),
+    readTimeout: const Duration(milliseconds: 60),
+    discoveryListen: const Duration(milliseconds: 300),
+  );
 
   Future<Map<String, Object?>> getJson(String path) async {
     final res = await http.get(base.resolve(path));
@@ -85,7 +86,10 @@ void main() {
     expect(c.capabilities.kelvinMin, 2200);
     expect(w.capabilities.color, isFalse);
     expect(w.capabilities.kelvinMin, 2700);
-    expect(c.state, const LightState(on: true, brightness: 80, mode: ColorMode.white, kelvin: 2700));
+    expect(
+      c.state,
+      const LightState(on: true, brightness: 80, mode: ColorMode.white, kelvin: 2700),
+    );
     expect(c.rssi, -55);
   });
 
@@ -109,7 +113,9 @@ void main() {
     expect(color.pilot['temp'], 2200);
     expect(white.pilot['temp'], 2700, reason: 'clamped to the TW bulb range');
 
-    res = await send('POST', 'api/group/state', {'rgb': {'r': 0, 'g': 0, 'b': 255}});
+    res = await send('POST', 'api/group/state', {
+      'rgb': {'r': 0, 'g': 0, 'b': 255},
+    });
     expect(res.statusCode, 200);
     expect(color.pilot['b'], 255);
     expect(white.pilot.containsKey('b'), isFalse, reason: 'white-only bulb skips color');
@@ -162,10 +168,20 @@ void main() {
   });
 
   test('rejects bad requests', () async {
-    expect((await send('POST', 'api/lights/a8bb50000001/state', {'brightness': 'max'})).statusCode, 400);
-    expect((await send('POST', 'api/lights/a8bb50000001/state', <String, Object?>{})).statusCode, 400);
-    expect((await send('POST', 'api/lights/a8bb50000001/state', {'rgb': {'r': 0, 'g': 0, 'b': 0}})).statusCode,
-        400);
+    expect(
+      (await send('POST', 'api/lights/a8bb50000001/state', {'brightness': 'max'})).statusCode,
+      400,
+    );
+    expect(
+      (await send('POST', 'api/lights/a8bb50000001/state', <String, Object?>{})).statusCode,
+      400,
+    );
+    expect(
+      (await send('POST', 'api/lights/a8bb50000001/state', {
+        'rgb': {'r': 0, 'g': 0, 'b': 0},
+      })).statusCode,
+      400,
+    );
     expect((await send('POST', 'api/lights/ffffffffffff/state', {'on': true})).statusCode, 404);
     expect((await send('PATCH', 'api/lights/a8bb50000001', {'name': ''})).statusCode, 400);
     expect((await http.get(base.resolve('api/nope'))).statusCode, 404);

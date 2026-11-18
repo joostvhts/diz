@@ -15,7 +15,11 @@ Future<void> main(List<String> arguments) async {
     ..addOption('count', defaultsTo: '3', help: 'Number of bulbs.')
     ..addOption('base-port', defaultsTo: '38901', help: 'Port of the first bulb.')
     ..addOption('host', defaultsTo: '127.0.0.1', help: 'Address to bind to.')
-    ..addOption('push-port', defaultsTo: '38900', help: 'Port pushes are sent to (real bulbs: 38900).')
+    ..addOption(
+      'push-port',
+      defaultsTo: '38900',
+      help: 'Port pushes are sent to (real bulbs: 38900).',
+    )
     ..addFlag('help', abbr: 'h', negatable: false);
   final args = parser.parse(arguments);
   if (args.flag('help')) {
@@ -43,7 +47,9 @@ Future<void> main(List<String> arguments) async {
   stdout
     ..writeln()
     ..writeln('Start the bridge with:')
-    ..writeln('  dart run bin/diz_bridge.dart --broadcast off --dev-cors --bulbs ${endpoints.join(',')}')
+    ..writeln(
+      '  dart run bin/diz_bridge.dart --broadcast off --dev-cors --bulbs ${endpoints.join(',')}',
+    )
     ..writeln()
     ..writeln('Press Ctrl+C to stop.');
 }

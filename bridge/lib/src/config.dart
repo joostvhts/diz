@@ -54,38 +54,61 @@ class BridgeConfig {
     // systemd sets STATE_DIRECTORY (possibly colon-separated) for StateDirectory=.
     final systemdState = env['STATE_DIRECTORY']?.split(':').first;
     return ArgParser()
-      ..addOption('host',
-          defaultsTo: env['DIZ_HOST'] ?? '0.0.0.0',
-          help: 'Address the HTTP API listens on. [DIZ_HOST]')
-      ..addOption('port',
-          defaultsTo: env['DIZ_PORT'] ?? '$defaultBridgePort', help: 'HTTP port. [DIZ_PORT]')
-      ..addOption('state-dir',
-          defaultsTo: env['DIZ_STATE_DIR'] ?? systemdState ?? 'diz-state',
-          help: 'Directory for lights.json (names, known bulbs). [DIZ_STATE_DIR]')
-      ..addOption('broadcast',
-          defaultsTo: env['DIZ_BROADCAST'] ?? '255.255.255.255',
-          help: 'Discovery broadcast address (ip or ip:port), or "off". [DIZ_BROADCAST]')
-      ..addOption('bulbs',
-          defaultsTo: env['DIZ_BULBS'] ?? '',
-          help: 'Comma-separated bulb addresses (ip or ip:port) to use in addition to '
-              'discovery. [DIZ_BULBS]')
-      ..addOption('advertise-ip',
-          defaultsTo: env['DIZ_ADVERTISE_IP'] ?? '',
-          help: "This host's LAN IPv4 address. Enables push status updates: bulbs are asked "
-              'to send changes to this address on UDP $wizPushPort. [DIZ_ADVERTISE_IP]')
-      ..addOption('push-port',
-          defaultsTo: env['DIZ_PUSH_PORT'] ?? '$wizPushPort',
-          help: 'UDP port to receive pushes on. Bulbs always send to $wizPushPort. [DIZ_PUSH_PORT]')
-      ..addOption('web-root',
-          defaultsTo: env['DIZ_WEB_ROOT'],
-          help: 'Serve a web UI from this directory at /. [DIZ_WEB_ROOT]')
-      ..addOption('discovery-interval',
-          defaultsTo: env['DIZ_DISCOVERY_INTERVAL'] ?? '300',
-          help: 'Seconds between automatic discovery runs. [DIZ_DISCOVERY_INTERVAL]')
-      ..addFlag('dev-cors',
-          defaultsTo: _truthy(env['DIZ_DEV_CORS']),
-          negatable: false,
-          help: 'Allow cross-origin requests (for UI development). [DIZ_DEV_CORS=1]')
+      ..addOption(
+        'host',
+        defaultsTo: env['DIZ_HOST'] ?? '0.0.0.0',
+        help: 'Address the HTTP API listens on. [DIZ_HOST]',
+      )
+      ..addOption(
+        'port',
+        defaultsTo: env['DIZ_PORT'] ?? '$defaultBridgePort',
+        help: 'HTTP port. [DIZ_PORT]',
+      )
+      ..addOption(
+        'state-dir',
+        defaultsTo: env['DIZ_STATE_DIR'] ?? systemdState ?? 'diz-state',
+        help: 'Directory for lights.json (names, known bulbs). [DIZ_STATE_DIR]',
+      )
+      ..addOption(
+        'broadcast',
+        defaultsTo: env['DIZ_BROADCAST'] ?? '255.255.255.255',
+        help: 'Discovery broadcast address (ip or ip:port), or "off". [DIZ_BROADCAST]',
+      )
+      ..addOption(
+        'bulbs',
+        defaultsTo: env['DIZ_BULBS'] ?? '',
+        help:
+            'Comma-separated bulb addresses (ip or ip:port) to use in addition to '
+            'discovery. [DIZ_BULBS]',
+      )
+      ..addOption(
+        'advertise-ip',
+        defaultsTo: env['DIZ_ADVERTISE_IP'] ?? '',
+        help:
+            "This host's LAN IPv4 address. Enables push status updates: bulbs are asked "
+            'to send changes to this address on UDP $wizPushPort. [DIZ_ADVERTISE_IP]',
+      )
+      ..addOption(
+        'push-port',
+        defaultsTo: env['DIZ_PUSH_PORT'] ?? '$wizPushPort',
+        help: 'UDP port to receive pushes on. Bulbs always send to $wizPushPort. [DIZ_PUSH_PORT]',
+      )
+      ..addOption(
+        'web-root',
+        defaultsTo: env['DIZ_WEB_ROOT'],
+        help: 'Serve a web UI from this directory at /. [DIZ_WEB_ROOT]',
+      )
+      ..addOption(
+        'discovery-interval',
+        defaultsTo: env['DIZ_DISCOVERY_INTERVAL'] ?? '300',
+        help: 'Seconds between automatic discovery runs. [DIZ_DISCOVERY_INTERVAL]',
+      )
+      ..addFlag(
+        'dev-cors',
+        defaultsTo: _truthy(env['DIZ_DEV_CORS']),
+        negatable: false,
+        help: 'Allow cross-origin requests (for UI development). [DIZ_DEV_CORS=1]',
+      )
       ..addFlag('help', abbr: 'h', negatable: false, help: 'Show this help.');
   }
 
@@ -146,11 +169,13 @@ class BridgeConfig {
     if (token == null || token.isEmpty) return null;
     if (token.toUpperCase() == 'CHANGEME') {
       throw const FormatException(
-          'DIZ_API_TOKEN is still the CHANGEME placeholder. Generate one with: openssl rand -hex 32');
+        'DIZ_API_TOKEN is still the CHANGEME placeholder. Generate one with: openssl rand -hex 32',
+      );
     }
     if (token.length < 16) {
       throw const FormatException(
-          'DIZ_API_TOKEN is too short; use at least 16 characters (e.g. openssl rand -hex 32)');
+        'DIZ_API_TOKEN is too short; use at least 16 characters (e.g. openssl rand -hex 32)',
+      );
     }
     return token;
   }
@@ -163,7 +188,8 @@ class BridgeConfig {
 
   /// Safe to log: never includes the token.
   @override
-  String toString() => 'host=$host port=$port stateDir=$stateDir '
+  String toString() =>
+      'host=$host port=$port stateDir=$stateDir '
       'broadcast=${broadcast ?? 'off'} bulbs=${bulbs.isEmpty ? '-' : bulbs.join(',')} '
       'push=${advertise == null ? 'off' : '${advertise!.address}:$wizPushPort (listening on $pushPort)'} '
       'auth=${apiToken == null ? 'off' : 'bearer token'} webRoot=${webRoot ?? '-'} '

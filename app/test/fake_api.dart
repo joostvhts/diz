@@ -28,7 +28,12 @@ class FakeLightsApi implements LightsApi {
   @override
   Future<BridgeHealth> health() async {
     _maybeFail();
-    return BridgeHealth(name: 'diz-bridge', version: 'test', apiVersion: dizApiVersion, lightCount: _lights.length);
+    return BridgeHealth(
+      name: 'diz-bridge',
+      version: 'test',
+      apiVersion: dizApiVersion,
+      lightCount: _lights.length,
+    );
   }
 
   @override
@@ -41,7 +46,8 @@ class FakeLightsApi implements LightsApi {
     if (!applyCommands) return light;
     final adapted = command.forCapabilities(light.capabilities);
     return light.copyWith(
-        state: (light.state ?? const LightState(on: false, brightness: 100)).applying(adapted));
+      state: (light.state ?? const LightState(on: false, brightness: 100)).applying(adapted),
+    );
   }
 
   @override

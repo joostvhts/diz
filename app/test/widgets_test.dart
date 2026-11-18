@@ -22,7 +22,11 @@ void main() {
       pollInterval: const Duration(hours: 1),
       throttleInterval: Duration.zero,
     )..start();
-    await tester.pumpWidget(MaterialApp(home: HomeScreen(controller: controller, onChangeBridge: () {})));
+    await tester.pumpWidget(
+      MaterialApp(
+        home: HomeScreen(controller: controller, onChangeBridge: () {}),
+      ),
+    );
     await tester.pump();
     await tester.pump();
   }
@@ -55,8 +59,9 @@ void main() {
     expect(find.text('Off'), findsNWidgets(2));
 
     final groupSwitch = find.descendant(
-        of: find.ancestor(of: find.text('All lights'), matching: find.byType(Card)),
-        matching: find.byType(Switch));
+      of: find.ancestor(of: find.text('All lights'), matching: find.byType(Card)),
+      matching: find.byType(Switch),
+    );
     await tester.tap(groupSwitch);
     await tester.pump();
     expect(api.commands.last, (groupKey, const SetStateCommand(on: true)));
@@ -78,7 +83,9 @@ void main() {
     await tester.pumpAndSettle();
     final wheel = find.byType(ColorWheel);
     expect(wheel, findsOneWidget);
-    final box = tester.getRect(find.descendant(of: wheel, matching: find.byType(CustomPaint)).first);
+    final box = tester.getRect(
+      find.descendant(of: wheel, matching: find.byType(CustomPaint)).first,
+    );
     // Near the right edge of the wheel: hue 0 (red), high saturation.
     await tester.tapAt(box.center + Offset(box.width * 0.45, 0));
     await tester.pump();
@@ -120,17 +127,22 @@ void main() {
     final fake = FakeLightsApi([colorLight]);
     Uri? requestedUrl;
     String? requestedToken;
-    await tester.pumpWidget(DizApp(
-      settings: settings,
-      apiFactory: (url, token) {
-        requestedUrl = url;
-        requestedToken = token;
-        return fake;
-      },
-    ));
+    await tester.pumpWidget(
+      DizApp(
+        settings: settings,
+        apiFactory: (url, token) {
+          requestedUrl = url;
+          requestedToken = token;
+          return fake;
+        },
+      ),
+    );
     expect(find.text('Welcome to Diz'), findsOneWidget);
     await tester.enterText(find.widgetWithText(TextField, 'Bridge address'), 'lights.example.com');
-    await tester.enterText(find.widgetWithText(TextField, 'Access token'), ' secret-token-0123456789 ');
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Access token'),
+      ' secret-token-0123456789 ',
+    );
     await tester.tap(find.text('Connect'));
     await tester.pump();
     await tester.pump();
@@ -150,7 +162,10 @@ void main() {
       ..failWith = const BridgeException('nope', statusCode: 401);
     await tester.pumpWidget(DizApp(settings: settings, apiFactory: (url, token) => fake));
     await tester.enterText(find.widgetWithText(TextField, 'Bridge address'), 'lights.example.com');
-    await tester.enterText(find.widgetWithText(TextField, 'Access token'), 'wrong-token-0123456789');
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Access token'),
+      'wrong-token-0123456789',
+    );
     await tester.tap(find.text('Connect'));
     await tester.pump();
     await tester.pump();

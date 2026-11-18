@@ -42,7 +42,10 @@ class LightsController extends ChangeNotifier with WidgetsBindingObserver {
   BridgeHealth? _health;
 
   List<Light> get lights => _lights;
-  List<Light> get onlineLights => [for (final l in _lights) if (l.online) l];
+  List<Light> get onlineLights => [
+    for (final l in _lights)
+      if (l.online) l,
+  ];
 
   /// True while a refresh is running.
   bool get loading => _loading;
@@ -162,8 +165,10 @@ class LightsController extends ChangeNotifier with WidgetsBindingObserver {
   Light _keepLocalEdits(Light fresh) {
     final editedAt = _localEdits[fresh.id];
     final groupEditedAt = _localEdits[groupKey];
-    final latest = [editedAt, groupEditedAt].whereType<DateTime>().fold<DateTime?>(
-        null, (a, b) => a == null || b.isAfter(a) ? b : a);
+    final latest = [
+      editedAt,
+      groupEditedAt,
+    ].whereType<DateTime>().fold<DateTime?>(null, (a, b) => a == null || b.isAfter(a) ? b : a);
     final recent = latest != null && DateTime.now().difference(latest) < localEditGrace;
     final busy = _throttle.isBusy(fresh.id) || _throttle.isBusy(groupKey);
     if (!recent && !busy) return fresh;
@@ -197,8 +202,9 @@ class LightsController extends ChangeNotifier with WidgetsBindingObserver {
   void _applyLocally(Light target, SetStateCommand command) {
     final adapted = command.forCapabilities(target.capabilities);
     if (adapted.isEmpty) return;
-    final state =
-        (target.state ?? const LightState(on: false, brightness: maxBrightness)).applying(adapted);
+    final state = (target.state ?? const LightState(on: false, brightness: maxBrightness)).applying(
+      adapted,
+    );
     _lights = [for (final l in _lights) l.id == target.id ? l.copyWith(state: state) : l];
   }
 
@@ -214,7 +220,9 @@ class LightsController extends ChangeNotifier with WidgetsBindingObserver {
         await api.setLight(key, command);
       }
     } on BridgeException catch (e) {
-      _message(e.statusCode == 504 ? '${light(key)?.name ?? 'The light'} did not respond' : e.message);
+      _message(
+        e.statusCode == 504 ? '${light(key)?.name ?? 'The light'} did not respond' : e.message,
+      );
       _localEdits.remove(key);
       unawaited(refresh());
     }

@@ -32,54 +32,53 @@ class _ColorWheelState extends State<ColorWheel> {
   @override
   Widget build(BuildContext context) {
     final color = widget.color;
-    return LayoutBuilder(builder: (context, constraints) {
-      final size = math.min(constraints.maxWidth, widget.maxSize);
-      final radius = size / 2;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final size = math.min(constraints.maxWidth, widget.maxSize);
+        final radius = size / 2;
 
-      Color colorAt(Offset local) {
-        final dx = local.dx - radius;
-        final dy = local.dy - radius;
-        final saturation = (math.sqrt(dx * dx + dy * dy) / radius).clamp(0.0, 1.0);
-        final hue = (math.atan2(dy, dx) * 180 / math.pi + 360) % 360;
-        return HSVColor.fromAHSV(1, hue, saturation, 1).toColor();
-      }
+        Color colorAt(Offset local) {
+          final dx = local.dx - radius;
+          final dy = local.dy - radius;
+          final saturation = (math.sqrt(dx * dx + dy * dy) / radius).clamp(0.0, 1.0);
+          final hue = (math.atan2(dy, dx) * 180 / math.pi + 360) % 360;
+          return HSVColor.fromAHSV(1, hue, saturation, 1).toColor();
+        }
 
-      void update(Offset local) {
-        final picked = _last = colorAt(local);
-        widget.onChanged?.call(picked);
-      }
+        void update(Offset local) {
+          final picked = _last = colorAt(local);
+          widget.onChanged?.call(picked);
+        }
 
-      void end() {
-        final picked = _last;
-        if (picked != null) widget.onChangeEnd?.call(picked);
-        _last = null;
-      }
+        void end() {
+          final picked = _last;
+          if (picked != null) widget.onChangeEnd?.call(picked);
+          _last = null;
+        }
 
-      final enabled = widget.onChanged != null;
-      return Center(
-        child: Semantics(
-          label: 'Color wheel',
-          child: GestureDetector(
-            onPanStart: enabled ? (d) => update(d.localPosition) : null,
-            onPanUpdate: enabled ? (d) => update(d.localPosition) : null,
-            onPanEnd: enabled ? (_) => end() : null,
-            onTapUp: enabled
-                ? (d) {
-                    update(d.localPosition);
-                    end();
-                  }
-                : null,
-            child: Opacity(
-              opacity: enabled ? 1 : 0.4,
-              child: CustomPaint(
-                size: Size.square(size),
-                painter: _WheelPainter(color),
+        final enabled = widget.onChanged != null;
+        return Center(
+          child: Semantics(
+            label: 'Color wheel',
+            child: GestureDetector(
+              onPanStart: enabled ? (d) => update(d.localPosition) : null,
+              onPanUpdate: enabled ? (d) => update(d.localPosition) : null,
+              onPanEnd: enabled ? (_) => end() : null,
+              onTapUp: enabled
+                  ? (d) {
+                      update(d.localPosition);
+                      end();
+                    }
+                  : null,
+              child: Opacity(
+                opacity: enabled ? 1 : 0.4,
+                child: CustomPaint(size: Size.square(size), painter: _WheelPainter(color)),
               ),
             ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 }
 
@@ -95,7 +94,11 @@ class _WheelPainter extends CustomPainter {
     final rect = Rect.fromCircle(center: center, radius: radius);
 
     final hues = [for (var h = 0; h <= 360; h += 30) HSVColor.fromAHSV(1, h % 360, 1, 1).toColor()];
-    canvas.drawCircle(center, radius, Paint()..shader = SweepGradient(colors: hues).createShader(rect));
+    canvas.drawCircle(
+      center,
+      radius,
+      Paint()..shader = SweepGradient(colors: hues).createShader(rect),
+    );
     canvas.drawCircle(
       center,
       radius,
@@ -112,7 +115,11 @@ class _WheelPainter extends CustomPainter {
     final marker = center + Offset(math.cos(angle) * distance, math.sin(angle) * distance);
     canvas.drawCircle(marker.translate(0, 1.5), 15, Paint()..color = Colors.black26);
     canvas.drawCircle(marker, 15, Paint()..color = Colors.white);
-    canvas.drawCircle(marker, 11, Paint()..color = HSVColor.fromAHSV(1, hsv.hue, hsv.saturation, 1).toColor());
+    canvas.drawCircle(
+      marker,
+      11,
+      Paint()..color = HSVColor.fromAHSV(1, hsv.hue, hsv.saturation, 1).toColor(),
+    );
   }
 
   @override
