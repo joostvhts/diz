@@ -9,10 +9,14 @@ void main() {
     });
 
     test('normalized: changing the look implies on and clamps brightness', () {
-      expect(const SetStateCommand(brightness: 3).normalized(),
-          const SetStateCommand(on: true, brightness: minBrightness));
-      expect(const SetStateCommand(kelvin: 2700).normalized(),
-          const SetStateCommand(on: true, kelvin: 2700));
+      expect(
+        const SetStateCommand(brightness: 3).normalized(),
+        const SetStateCommand(on: true, brightness: minBrightness),
+      );
+      expect(
+        const SetStateCommand(kelvin: 2700).normalized(),
+        const SetStateCommand(on: true, kelvin: 2700),
+      );
     });
 
     test('validate', () {
@@ -22,35 +26,54 @@ void main() {
       expect(const SetStateCommand(rgb: Rgb(256, 0, 0)).validate(), isNotNull);
       expect(const SetStateCommand(kelvin: 500).validate(), isNotNull);
       expect(const SetStateCommand(brightness: 101).validate(), isNotNull);
-      expect(const SetStateCommand(on: true, brightness: 40, rgb: Rgb(255, 0, 0)).validate(), isNull);
+      expect(
+        const SetStateCommand(on: true, brightness: 40, rgb: Rgb(255, 0, 0)).validate(),
+        isNull,
+      );
     });
 
     test('mergedWith: newer fields win, color kinds replace each other', () {
       const a = SetStateCommand(brightness: 30, kelvin: 3000);
-      expect(a.mergedWith(const SetStateCommand(rgb: Rgb(255, 0, 0))),
-          const SetStateCommand(on: true, brightness: 30, rgb: Rgb(255, 0, 0)));
-      expect(a.mergedWith(const SetStateCommand(brightness: 80)),
-          const SetStateCommand(on: true, brightness: 80, kelvin: 3000));
+      expect(
+        a.mergedWith(const SetStateCommand(rgb: Rgb(255, 0, 0))),
+        const SetStateCommand(on: true, brightness: 30, rgb: Rgb(255, 0, 0)),
+      );
+      expect(
+        a.mergedWith(const SetStateCommand(brightness: 80)),
+        const SetStateCommand(on: true, brightness: 80, kelvin: 3000),
+      );
     });
 
     test('mergedWith: off then brightness turns back on; brightness then off stays off', () {
-      expect(const SetStateCommand(on: false).mergedWith(const SetStateCommand(brightness: 60)),
-          const SetStateCommand(on: true, brightness: 60));
-      expect(const SetStateCommand(brightness: 60).mergedWith(const SetStateCommand(on: false)),
-          const SetStateCommand(on: false));
-      expect(const SetStateCommand(on: false).mergedWith(const SetStateCommand(on: true)),
-          const SetStateCommand(on: true));
+      expect(
+        const SetStateCommand(on: false).mergedWith(const SetStateCommand(brightness: 60)),
+        const SetStateCommand(on: true, brightness: 60),
+      );
+      expect(
+        const SetStateCommand(brightness: 60).mergedWith(const SetStateCommand(on: false)),
+        const SetStateCommand(on: false),
+      );
+      expect(
+        const SetStateCommand(on: false).mergedWith(const SetStateCommand(on: true)),
+        const SetStateCommand(on: true),
+      );
     });
 
     test('forCapabilities drops unsupported parts and clamps kelvin', () {
       final tw = Capabilities.fromModuleName('ESP56_SHTW3_01');
-      expect(const SetStateCommand(rgb: Rgb(255, 0, 0), brightness: 50).forCapabilities(tw),
-          const SetStateCommand(brightness: 50));
-      expect(const SetStateCommand(kelvin: 2200).forCapabilities(tw),
-          const SetStateCommand(kelvin: 2700));
+      expect(
+        const SetStateCommand(rgb: Rgb(255, 0, 0), brightness: 50).forCapabilities(tw),
+        const SetStateCommand(brightness: 50),
+      );
+      expect(
+        const SetStateCommand(kelvin: 2200).forCapabilities(tw),
+        const SetStateCommand(kelvin: 2700),
+      );
       final plug = Capabilities.fromModuleName('ESP10_SOCKET_06');
-      expect(const SetStateCommand(on: true, brightness: 50).forCapabilities(plug),
-          const SetStateCommand(on: true));
+      expect(
+        const SetStateCommand(on: true, brightness: 50).forCapabilities(plug),
+        const SetStateCommand(on: true),
+      );
     });
 
     test('json round trip and type errors', () {

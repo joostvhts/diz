@@ -32,8 +32,9 @@ class SetupScreen extends StatefulWidget {
 }
 
 class _SetupScreenState extends State<SetupScreen> {
-  late final TextEditingController _address =
-      TextEditingController(text: _display(widget.initialUrl) ?? defaultBridgeUrlText);
+  late final TextEditingController _address = TextEditingController(
+    text: _display(widget.initialUrl) ?? defaultBridgeUrlText,
+  );
   late final TextEditingController _token = TextEditingController(text: widget.initialToken ?? '');
   bool _busy = false;
   bool _showToken = false;
@@ -112,7 +113,11 @@ class _SetupScreenState extends State<SetupScreen> {
                   children: [
                     Icon(Icons.lightbulb, size: 56, color: theme.colorScheme.primary),
                     const SizedBox(height: 16),
-                    Text('Welcome to Diz', style: theme.textTheme.headlineSmall, textAlign: TextAlign.center),
+                    Text(
+                      'Welcome to Diz',
+                      style: theme.textTheme.headlineSmall,
+                      textAlign: TextAlign.center,
+                    ),
                     const SizedBox(height: 8),
                     Text(
                       'Diz controls your WiZ lights through a Diz bridge on your home network. '
@@ -153,7 +158,9 @@ class _SetupScreenState extends State<SetupScreen> {
                         border: const OutlineInputBorder(),
                         suffixIcon: IconButton(
                           tooltip: _showToken ? 'Hide token' : 'Show token',
-                          icon: Icon(_showToken ? Icons.visibility_off_outlined : Icons.visibility_outlined),
+                          icon: Icon(
+                            _showToken ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                          ),
                           onPressed: () => setState(() => _showToken = !_showToken),
                         ),
                       ),
@@ -162,7 +169,10 @@ class _SetupScreenState extends State<SetupScreen> {
                     FilledButton(
                       onPressed: _busy ? null : _connect,
                       child: _busy
-                          ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                          ? const SizedBox.square(
+                              dimension: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
                           : const Text('Connect'),
                     ),
                   ],

@@ -6,6 +6,7 @@ import 'package:material_ui/material_ui.dart';
 import '../api/bridge_client.dart';
 import '../state/lights_controller.dart';
 import 'control_panel.dart';
+import 'control_sheet.dart';
 import 'light_tile.dart';
 import 'settings_screen.dart';
 
@@ -64,36 +65,32 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() => _selected = target);
       return;
     }
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      useSafeArea: true,
-      builder: (_) => SingleChildScrollView(
-        child: ControlPanel(controller: widget.controller, target: target),
-      ),
-    );
+    showControlSheet(context, controller: widget.controller, target: target);
   }
 
   Future<void> _discover() async {
     try {
       final added = await widget.controller.discover();
-      _showMessage(added == 0 ? 'No new lights found' : 'Found $added new light${added == 1 ? '' : 's'}');
+      _showMessage(
+        added == 0 ? 'No new lights found' : 'Found $added new light${added == 1 ? '' : 's'}',
+      );
     } on BridgeException catch (e) {
       _showMessage(e.message);
     }
   }
 
   void _openSettings() {
-    Navigator.of(context).push(MaterialPageRoute<void>(
-      builder: (context) => SettingsScreen(
-        controller: widget.controller,
-        onChangeBridge: () {
-          Navigator.of(context).pop();
-          widget.onChangeBridge();
-        },
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) => SettingsScreen(
+          controller: widget.controller,
+          onChangeBridge: () {
+            Navigator.of(context).pop();
+            widget.onChangeBridge();
+          },
+        ),
       ),
-    ));
+    );
   }
 
   @override
@@ -111,41 +108,47 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: const Icon(Icons.refresh),
             ),
           ),
-          IconButton(tooltip: 'Settings', onPressed: _openSettings, icon: const Icon(Icons.settings_outlined)),
+          IconButton(
+            tooltip: 'Settings',
+            onPressed: _openSettings,
+            icon: const Icon(Icons.settings_outlined),
+          ),
         ],
       ),
-      body: LayoutBuilder(builder: (context, constraints) {
-        final wide = constraints.maxWidth >= widePaneBreakpoint;
-        final list = ListenableBuilder(
-          listenable: controller,
-          builder: (context, _) => _buildList(context, wide: wide),
-        );
-        if (!wide) return list;
-        final selected = _selected;
-        return Row(
-          children: [
-            SizedBox(width: 420, child: list),
-            const VerticalDivider(width: 1),
-            Expanded(
-              child: selected == null
-                  ? const Center(child: Text('Select a light'))
-                  : SingleChildScrollView(
-                      padding: const EdgeInsets.only(top: 16),
-                      child: Center(
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 520),
-                          child: ControlPanel(
-                            key: ValueKey(selected),
-                            controller: controller,
-                            target: selected,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final wide = constraints.maxWidth >= widePaneBreakpoint;
+          final list = ListenableBuilder(
+            listenable: controller,
+            builder: (context, _) => _buildList(context, wide: wide),
+          );
+          if (!wide) return list;
+          final selected = _selected;
+          return Row(
+            children: [
+              SizedBox(width: 420, child: list),
+              const VerticalDivider(width: 1),
+              Expanded(
+                child: selected == null
+                    ? const Center(child: Text('Select a light'))
+                    : SingleChildScrollView(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 520),
+                            child: ControlPanel(
+                              key: ValueKey(selected),
+                              controller: controller,
+                              target: selected,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-            ),
-          ],
-        );
-      }),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -168,7 +171,8 @@ class _HomeScreenState extends State<HomeScreen> {
           if (health != null && !health.isCompatible)
             _Notice(
               icon: Icons.update,
-              message: 'This bridge (${health.version}) speaks API version ${health.apiVersion}, '
+              message:
+                  'This bridge (${health.version}) speaks API version ${health.apiVersion}, '
                   'but this app expects version $dizApiVersion. Update the '
                   '${health.apiVersion < dizApiVersion ? 'bridge' : 'app'}.',
             ),
@@ -177,8 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: EdgeInsets.all(48),
               child: Center(child: CircularProgressIndicator()),
             ),
-          if (c.loaded && c.lights.isEmpty)
-            _EmptyState(onDiscover: _discover),
+          if (c.loaded && c.lights.isEmpty) _EmptyState(onDiscover: _discover),
           if (c.lights.isNotEmpty) ...[
             GroupTile(
               controller: c,
@@ -226,7 +229,9 @@ class _Notice extends StatelessWidget {
           children: [
             Icon(icon, color: fg),
             const SizedBox(width: 12),
-            Expanded(child: Text(message, style: TextStyle(color: fg))),
+            Expanded(
+              child: Text(message, style: TextStyle(color: fg)),
+            ),
             ?action,
           ],
         ),

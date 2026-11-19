@@ -25,37 +25,40 @@ const String dizPhoneMac = 'd12d12000001';
 abstract final class WizMessages {
   static Map<String, Object?> getPilot() => {'method': 'getPilot', 'params': <String, Object?>{}};
 
-  static Map<String, Object?> setPilot(Map<String, Object?> params) =>
-      {'method': 'setPilot', 'params': params};
+  static Map<String, Object?> setPilot(Map<String, Object?> params) => {
+    'method': 'setPilot',
+    'params': params,
+  };
 
-  static Map<String, Object?> getSystemConfig() =>
-      {'method': 'getSystemConfig', 'params': <String, Object?>{}};
+  static Map<String, Object?> getSystemConfig() => {
+    'method': 'getSystemConfig',
+    'params': <String, Object?>{},
+  };
 
-  static Map<String, Object?> getModelConfig() =>
-      {'method': 'getModelConfig', 'params': <String, Object?>{}};
+  static Map<String, Object?> getModelConfig() => {
+    'method': 'getModelConfig',
+    'params': <String, Object?>{},
+  };
 
-  static Map<String, Object?> getUserConfig() =>
-      {'method': 'getUserConfig', 'params': <String, Object?>{}};
+  static Map<String, Object?> getUserConfig() => {
+    'method': 'getUserConfig',
+    'params': <String, Object?>{},
+  };
 
   /// Subscribes to push updates: the bulb will send `syncPilot` messages to
   /// [phoneIp]:[wizPushPort] whenever its state changes. [phoneIp] must be an
   /// address the bulb can reach (the host's LAN IP, not a container IP).
   static Map<String, Object?> registerPush(String phoneIp) => {
-        'method': 'registration',
-        'params': {'phoneIp': phoneIp, 'register': true, 'phoneMac': dizPhoneMac},
-      };
+    'method': 'registration',
+    'params': {'phoneIp': phoneIp, 'register': true, 'phoneMac': dizPhoneMac},
+  };
 
   /// Discovery probe. Every bulb that receives it (via broadcast) answers with
   /// its MAC. `register: false` means we don't subscribe to push updates.
   static Map<String, Object?> registration() => {
-        'method': 'registration',
-        'params': {
-          'phoneMac': 'AAAAAAAAAAAA',
-          'register': false,
-          'phoneIp': '1.2.3.4',
-          'id': '1',
-        },
-      };
+    'method': 'registration',
+    'params': {'phoneMac': 'AAAAAAAAAAAA', 'register': false, 'phoneIp': '1.2.3.4', 'id': '1'},
+  };
 }
 
 /// Translates a Diz command into `setPilot` params. The command is normalized
@@ -120,10 +123,10 @@ PilotReading parsePilot(Map<String, Object?> result) {
 typedef SystemInfo = ({String? mac, String? moduleName, String? firmware});
 
 SystemInfo parseSystemConfig(Map<String, Object?> result) => (
-      mac: result['mac'] as String?,
-      moduleName: result['moduleName'] as String?,
-      firmware: result['fwVersion'] as String?,
-    );
+  mac: result['mac'] as String?,
+  moduleName: result['moduleName'] as String?,
+  firmware: result['fwVersion'] as String?,
+);
 
 /// Extracts the supported color temperature range. Newer firmware reports
 /// `cctRange` in `getModelConfig`; older firmware has `extRange` or
@@ -132,11 +135,7 @@ SystemInfo parseSystemConfig(Map<String, Object?> result) => (
   Map<String, Object?>? modelConfig,
   Map<String, Object?>? userConfig,
 }) {
-  final candidates = [
-    modelConfig?['cctRange'],
-    userConfig?['extRange'],
-    userConfig?['whiteRange'],
-  ];
+  final candidates = [modelConfig?['cctRange'], userConfig?['extRange'], userConfig?['whiteRange']];
   for (final candidate in candidates) {
     if (candidate is! List || candidate.isEmpty) continue;
     final values = candidate.whereType<num>().map((n) => n.round()).where((n) => n > 0).toList();

@@ -53,28 +53,28 @@ class BulbRecord {
       Capabilities.fromModuleName(moduleName, kelvinMin: kelvinMin, kelvinMax: kelvinMax);
 
   Light toLight() => Light(
-        id: mac,
-        name: name,
-        online: online,
-        capabilities: capabilities,
-        ip: endpoint?.toString(),
-        model: moduleName,
-        firmware: firmware,
-        state: state,
-        rssi: rssi,
-      );
+    id: mac,
+    name: name,
+    online: online,
+    capabilities: capabilities,
+    ip: endpoint?.toString(),
+    model: moduleName,
+    firmware: firmware,
+    state: state,
+    rssi: rssi,
+  );
 
   /// What survives a restart. Live state is re-read from the bulbs.
   Map<String, Object?> toJson() => {
-        'mac': mac,
-        'name': name,
-        if (endpoint != null) 'ip': endpoint!.address.address,
-        if (endpoint != null) 'port': endpoint!.port,
-        if (moduleName != null) 'moduleName': moduleName,
-        if (firmware != null) 'firmware': firmware,
-        if (kelvinMin != null) 'kelvinMin': kelvinMin,
-        if (kelvinMax != null) 'kelvinMax': kelvinMax,
-      };
+    'mac': mac,
+    'name': name,
+    if (endpoint != null) 'ip': endpoint!.address.address,
+    if (endpoint != null) 'port': endpoint!.port,
+    if (moduleName != null) 'moduleName': moduleName,
+    if (firmware != null) 'firmware': firmware,
+    if (kelvinMin != null) 'kelvinMin': kelvinMin,
+    if (kelvinMax != null) 'kelvinMax': kelvinMax,
+  };
 
   static BulbRecord fromJson(Map<String, Object?> json) {
     final ip = json['ip'] as String?;
@@ -113,10 +113,11 @@ class Registry {
     this.readTimeout = const Duration(milliseconds: 200),
     this.discoveryListen = const Duration(seconds: 2),
     this.rediscoverAfter = const Duration(minutes: 1),
-  })  : _advertise = advertiseAddress,
-        _log = log ?? ((_) {});
+  }) : _advertise = advertiseAddress,
+       _log = log ?? ((_) {});
 
   final WizTransport _transport;
+
   /// Null keeps everything in memory (lost on restart).
   final LightStore? _store;
   final List<WizEndpoint> _staticBulbs;
@@ -179,10 +180,12 @@ class Registry {
     final store = _store;
     if (store == null) return;
     const encoder = JsonEncoder.withIndent('  ');
-    await store.write(encoder.convert({
-      'version': 1,
-      'lights': [for (final r in _bulbs.values) r.toJson()],
-    }));
+    await store.write(
+      encoder.convert({
+        'version': 1,
+        'lights': [for (final r in _bulbs.values) r.toJson()],
+      }),
+    );
   }
 
   // -------------------------------------------------------------- discovery
@@ -198,8 +201,11 @@ class Registry {
     final broadcast = _broadcast;
     if (broadcast != null) {
       try {
-        final replies = await _transport.collect(broadcast, WizMessages.registration(),
-            listenFor: discoveryListen);
+        final replies = await _transport.collect(
+          broadcast,
+          WizMessages.registration(),
+          listenFor: discoveryListen,
+        );
         for (final reply in replies) {
           final mac = reply.result['mac'];
           if (mac is String && mac.isNotEmpty) found[normalizeMac(mac)] = reply.from;
@@ -209,16 +215,23 @@ class Registry {
       }
     }
 
-    await Future.wait(_staticBulbs.map((endpoint) async {
-      try {
-        final info = parseSystemConfig(await _transport.request(
-            endpoint, WizMessages.getSystemConfig(),
-            attempts: readAttempts, attemptTimeout: readTimeout));
-        if (info.mac != null) found[normalizeMac(info.mac!)] = endpoint;
-      } on WizException catch (e) {
-        _log('Static bulb $endpoint not reachable: $e');
-      }
-    }));
+    await Future.wait(
+      _staticBulbs.map((endpoint) async {
+        try {
+          final info = parseSystemConfig(
+            await _transport.request(
+              endpoint,
+              WizMessages.getSystemConfig(),
+              attempts: readAttempts,
+              attemptTimeout: readTimeout,
+            ),
+          );
+          if (info.mac != null) found[normalizeMac(info.mac!)] = endpoint;
+        } on WizException catch (e) {
+          _log('Static bulb $endpoint not reachable: $e');
+        }
+      }),
+    );
 
     var added = 0;
     var changed = false;
@@ -226,7 +239,11 @@ class Registry {
     for (final MapEntry(key: mac, value: endpoint) in found.entries) {
       var bulb = _bulbs[mac];
       if (bulb == null) {
-        bulb = _bulbs[mac] = BulbRecord(mac: mac, name: BulbRecord.defaultName(mac), endpoint: endpoint);
+        bulb = _bulbs[mac] = BulbRecord(
+          mac: mac,
+          name: BulbRecord.defaultName(mac),
+          endpoint: endpoint,
+        );
         added++;
         changed = true;
         _log('Found new light $mac at $endpoint');
@@ -253,24 +270,37 @@ class Registry {
     final endpoint = bulb.endpoint;
     if (endpoint == null) return false;
     try {
-      final info = parseSystemConfig(await _transport.request(
-          endpoint, WizMessages.getSystemConfig(),
-          attempts: readAttempts, attemptTimeout: readTimeout));
+      final info = parseSystemConfig(
+        await _transport.request(
+          endpoint,
+          WizMessages.getSystemConfig(),
+          attempts: readAttempts,
+          attemptTimeout: readTimeout,
+        ),
+      );
       bulb.moduleName = info.moduleName;
       bulb.firmware = info.firmware;
 
       Map<String, Object?>? modelConfig;
       Map<String, Object?>? userConfig;
       try {
-        modelConfig = await _transport.request(endpoint, WizMessages.getModelConfig(),
-            attempts: readAttempts, attemptTimeout: readTimeout);
+        modelConfig = await _transport.request(
+          endpoint,
+          WizMessages.getModelConfig(),
+          attempts: readAttempts,
+          attemptTimeout: readTimeout,
+        );
       } on WizException {
         // Older firmware has no getModelConfig.
       }
       if (modelConfig?['cctRange'] == null) {
         try {
-          userConfig = await _transport.request(endpoint, WizMessages.getUserConfig(),
-              attempts: readAttempts, attemptTimeout: readTimeout);
+          userConfig = await _transport.request(
+            endpoint,
+            WizMessages.getUserConfig(),
+            attempts: readAttempts,
+            attemptTimeout: readTimeout,
+          );
         } on WizException {
           // Not all bulbs have it either; defaults will do.
         }
@@ -279,8 +309,10 @@ class Registry {
       bulb.kelvinMin = range.min;
       bulb.kelvinMax = range.max;
       bulb.infoLoaded = true;
-      _log('${bulb.name} (${bulb.mac}): model ${bulb.moduleName ?? '?'}, firmware ${bulb.firmware ?? '?'}'
-          '${range.min != null ? ', ${range.min}-${range.max} K' : ''}');
+      _log(
+        '${bulb.name} (${bulb.mac}): model ${bulb.moduleName ?? '?'}, firmware ${bulb.firmware ?? '?'}'
+        '${range.min != null ? ', ${range.min}-${range.max} K' : ''}',
+      );
       return true;
     } on WizException catch (e) {
       _log('Could not read info for ${bulb.name}: $e');
@@ -291,7 +323,8 @@ class Registry {
   // ---------------------------------------------------------------- reading
 
   /// Reads the live state of every known bulb in parallel. Concurrent calls share one run.
-  Future<List<Light>> refresh() => _refreshing ??= _refresh().whenComplete(() => _refreshing = null);
+  Future<List<Light>> refresh() =>
+      _refreshing ??= _refresh().whenComplete(() => _refreshing = null);
 
   Future<List<Light>> _refresh() async {
     await Future.wait(_bulbs.values.map(_readState));
@@ -316,8 +349,14 @@ class Registry {
       return;
     }
     try {
-      final reading = parsePilot(await _transport.request(endpoint, WizMessages.getPilot(),
-          attempts: readAttempts, attemptTimeout: readTimeout));
+      final reading = parsePilot(
+        await _transport.request(
+          endpoint,
+          WizMessages.getPilot(),
+          attempts: readAttempts,
+          attemptTimeout: readTimeout,
+        ),
+      );
       bulb
         ..state = reading.state
         ..rssi = reading.rssi
@@ -345,8 +384,12 @@ class Registry {
     final endpoint = bulb.endpoint;
     if (endpoint == null) return;
     try {
-      await _transport.request(endpoint, WizMessages.registerPush(address.address),
-          attempts: 1, attemptTimeout: readTimeout);
+      await _transport.request(
+        endpoint,
+        WizMessages.registerPush(address.address),
+        attempts: 1,
+        attemptTimeout: readTimeout,
+      );
     } on WizException {
       // Offline or unplugged; the next keep-alive tries again.
     }
@@ -379,8 +422,11 @@ class Registry {
         // It has forgotten our registration, so renew it and read its state.
         var bulb = _bulbs[mac];
         if (bulb == null) {
-          bulb = _bulbs[mac] =
-              BulbRecord(mac: mac, name: BulbRecord.defaultName(mac), endpoint: WizEndpoint(from));
+          bulb = _bulbs[mac] = BulbRecord(
+            mac: mac,
+            name: BulbRecord.defaultName(mac),
+            endpoint: WizEndpoint(from),
+          );
           _log('Found new light $mac at ${from.address} (it announced itself)');
           unawaited(_loadInfo(bulb).then((_) => _save()).catchError((Object _) {}));
         }
@@ -417,13 +463,15 @@ class Registry {
       targets = ids.map((id) => _bulbs[normalizeMac(id)] ?? (throw UnknownLightException(id)));
     }
     final failed = <String>[];
-    await Future.wait(targets.toList().map((bulb) async {
-      try {
-        await setState(bulb.mac, command);
-      } on WizException {
-        failed.add(bulb.mac);
-      }
-    }));
+    await Future.wait(
+      targets.toList().map((bulb) async {
+        try {
+          await setState(bulb.mac, command);
+        } on WizException {
+          failed.add(bulb.mac);
+        }
+      }),
+    );
     return GroupResult(lights: lights, failed: failed);
   }
 
@@ -432,11 +480,16 @@ class Registry {
     final endpoint = bulb?.endpoint;
     if (bulb == null || endpoint == null) throw WizException('No address known for $mac');
     try {
-      await _transport.request(endpoint, WizMessages.setPilot(pilotParams(command)),
-          attempts: commandAttempts, attemptTimeout: commandTimeout);
+      await _transport.request(
+        endpoint,
+        WizMessages.setPilot(pilotParams(command)),
+        attempts: commandAttempts,
+        attemptTimeout: commandTimeout,
+      );
       bulb
-        ..state = (bulb.state ?? const LightState(on: false, brightness: maxBrightness))
-            .applying(command)
+        ..state = (bulb.state ?? const LightState(on: false, brightness: maxBrightness)).applying(
+          command,
+        )
         ..online = true
         ..lastSeen = DateTime.now();
     } on WizException {
