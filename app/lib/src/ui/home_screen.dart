@@ -6,6 +6,7 @@ import 'package:material_ui/material_ui.dart';
 import '../api/bridge_client.dart';
 import '../state/lights_controller.dart';
 import 'control_panel.dart';
+import 'control_sheet.dart';
 import 'light_tile.dart';
 import 'settings_screen.dart';
 
@@ -64,15 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() => _selected = target);
       return;
     }
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      useSafeArea: true,
-      builder: (_) => SingleChildScrollView(
-        child: ControlPanel(controller: widget.controller, target: target),
-      ),
-    );
+    showControlSheet(context, controller: widget.controller, target: target);
   }
 
   Future<void> _discover() async {
