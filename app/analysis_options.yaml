@@ -9,6 +9,10 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+# Same width in every package of the workspace; CI checks `dart format`.
+formatter:
+  page_width: 100
+
 # Added by Flutter 3.50's `pub get`: generated and platform code isn't analyzed.
 analyzer:
   exclude:

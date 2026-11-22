@@ -37,7 +37,9 @@ class GradientSlider extends StatelessWidget {
       data: theme.copyWith(
         trackHeight: 14,
         trackShape: _GradientTrackShape(
-          LinearGradient(colors: enabled ? colors : [for (final c in colors) c.withValues(alpha: 0.3)]),
+          LinearGradient(
+            colors: enabled ? colors : [for (final c in colors) c.withValues(alpha: 0.3)],
+          ),
           // Keeps light/dark gradient ends visible on both themes.
           Theme.of(context).colorScheme.outlineVariant,
         ),
@@ -89,7 +91,10 @@ class _GradientTrackShape extends SliderTrackShape with BaseSliderTrackShape {
     );
     final rrect = RRect.fromRectAndRadius(rect, Radius.circular(rect.height / 2));
     context.canvas
-      ..drawRRect(rrect, Paint()..shader = gradient.createShader(rect, textDirection: textDirection))
+      ..drawRRect(
+        rrect,
+        Paint()..shader = gradient.createShader(rect, textDirection: textDirection),
+      )
       ..drawRRect(
         rrect,
         Paint()

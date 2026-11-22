@@ -9,12 +9,12 @@ import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:test/test.dart';
 
 Registry _registry(List<WizEndpoint> bulbs, {InternetAddress? advertise}) => Registry(
-      transport: UdpWizTransport(),
-      staticBulbs: bulbs,
-      advertiseAddress: advertise,
-      commandTimeout: const Duration(milliseconds: 60),
-      readTimeout: const Duration(milliseconds: 60),
-    );
+  transport: UdpWizTransport(),
+  staticBulbs: bulbs,
+  advertiseAddress: advertise,
+  commandTimeout: const Duration(milliseconds: 60),
+  readTimeout: const Duration(milliseconds: 60),
+);
 
 /// Polls [condition] until it holds or one second passes.
 Future<void> eventually(bool Function() condition, {String? reason}) async {
@@ -32,7 +32,10 @@ void main() {
 
     setUp(() async {
       server = await shelf_io.serve(
-          buildHandler(_registry(const []), apiToken: token), InternetAddress.loopbackIPv4, 0);
+        buildHandler(_registry(const []), apiToken: token),
+        InternetAddress.loopbackIPv4,
+        0,
+      );
       base = Uri.parse('http://127.0.0.1:${server.port}/');
     });
     tearDown(() => server.close(force: true));
@@ -42,14 +45,22 @@ void main() {
       expect(none.statusCode, 401);
       expect(none.headers['www-authenticate'], startsWith('Bearer'));
 
-      final wrong = await http.get(base.resolve('api/lights'),
-          headers: {'authorization': 'Bearer test-token-0123456789abcdeX'});
+      final wrong = await http.get(
+        base.resolve('api/lights'),
+        headers: {'authorization': 'Bearer test-token-0123456789abcdeX'},
+      );
       expect(wrong.statusCode, 401);
 
-      final basic = await http.get(base.resolve('api/lights'), headers: {'authorization': 'Basic $token'});
+      final basic = await http.get(
+        base.resolve('api/lights'),
+        headers: {'authorization': 'Basic $token'},
+      );
       expect(basic.statusCode, 401);
 
-      final ok = await http.get(base.resolve('api/lights'), headers: {'authorization': 'bearer $token'});
+      final ok = await http.get(
+        base.resolve('api/lights'),
+        headers: {'authorization': 'bearer $token'},
+      );
       expect(ok.statusCode, 200);
     });
 
@@ -66,13 +77,21 @@ void main() {
       expect(BridgeConfig.readApiToken({'DIZ_API_TOKEN': '  '}), isNull);
       expect(() => BridgeConfig.readApiToken({'DIZ_API_TOKEN': 'CHANGEME'}), throwsFormatException);
       expect(() => BridgeConfig.readApiToken({'DIZ_API_TOKEN': 'short'}), throwsFormatException);
-      expect(BridgeConfig.readApiToken({'DIZ_API_TOKEN': ' 0123456789abcdef '}), '0123456789abcdef');
+      expect(
+        BridgeConfig.readApiToken({'DIZ_API_TOKEN': ' 0123456789abcdef '}),
+        '0123456789abcdef',
+      );
 
       final dir = await Directory.systemTemp.createTemp('diz_token');
       addTearDown(() => dir.delete(recursive: true));
       final file = File('${dir.path}/token')..writeAsStringSync('from-a-file-0123456789\n');
-      expect(BridgeConfig.readApiToken({'DIZ_API_TOKEN_FILE': file.path, 'DIZ_API_TOKEN': 'ignored-0123456789'}),
-          'from-a-file-0123456789');
+      expect(
+        BridgeConfig.readApiToken({
+          'DIZ_API_TOKEN_FILE': file.path,
+          'DIZ_API_TOKEN': 'ignored-0123456789',
+        }),
+        'from-a-file-0123456789',
+      );
     });
 
     test('advertise ip must be IPv4 and enables push', () {
@@ -84,7 +103,10 @@ void main() {
       expect(config.toString(), isNot(contains('token=')));
 
       final bad = {'DIZ_ADVERTISE_IP': 'pi.local'};
-      expect(() => BridgeConfig.fromArgs(BridgeConfig.parser(bad).parse([]), bad), throwsFormatException);
+      expect(
+        () => BridgeConfig.fromArgs(BridgeConfig.parser(bad).parse([]), bad),
+        throwsFormatException,
+      );
     });
   });
 
@@ -99,8 +121,9 @@ void main() {
       await listener.start(host: InternetAddress.loopbackIPv4, port: 0);
       bulb = FakeBulb(mac: 'a8bb50000009', pushPort: listener.port);
       await bulb.start();
-      registry = _registry([WizEndpoint(InternetAddress.loopbackIPv4, bulb.port)],
-          advertise: InternetAddress.loopbackIPv4);
+      registry = _registry([
+        WizEndpoint(InternetAddress.loopbackIPv4, bulb.port),
+      ], advertise: InternetAddress.loopbackIPv4);
       await registry.discover();
     });
 
@@ -115,8 +138,10 @@ void main() {
       expect(bulb.pushTarget, InternetAddress.loopbackIPv4);
 
       bulb.changeExternally({'r': 255, 'g': 0, 'b': 0, 'dimming': 30});
-      await eventually(() => registry.byId('a8bb50000009')!.state?.mode == ColorMode.rgb,
-          reason: 'syncPilot should update the cached state');
+      await eventually(
+        () => registry.byId('a8bb50000009')!.state?.mode == ColorMode.rgb,
+        reason: 'syncPilot should update the cached state',
+      );
       final state = registry.byId('a8bb50000009')!.state!;
       expect(state.rgb, const Rgb(255, 0, 0));
       expect(state.brightness, 30);

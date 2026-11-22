@@ -35,8 +35,8 @@ class HttpBridgeClient implements LightsApi {
     String? token,
     http.Client? client,
     this.timeout = const Duration(seconds: 6),
-  })  : _token = (token == null || token.trim().isEmpty) ? null : token.trim(),
-        _client = client ?? http.Client();
+  }) : _token = (token == null || token.trim().isEmpty) ? null : token.trim(),
+       _client = client ?? http.Client();
 
   @override
   final Uri baseUrl;
@@ -50,26 +50,32 @@ class HttpBridgeClient implements LightsApi {
   Future<BridgeHealth> health() async => BridgeHealth.fromJson(await _call('GET', 'api/health'));
 
   @override
-  Future<List<Light>> lights() async => lightsFromJson((await _call('GET', 'api/lights'))['lights']);
+  Future<List<Light>> lights() async =>
+      lightsFromJson((await _call('GET', 'api/lights'))['lights']);
 
   @override
-  Future<Light> setLight(String id, SetStateCommand command) async => _light(await _call(
-      'POST', 'api/lights/${Uri.encodeComponent(id)}/state',
-      body: command.toJson()));
+  Future<Light> setLight(String id, SetStateCommand command) async => _light(
+    await _call('POST', 'api/lights/${Uri.encodeComponent(id)}/state', body: command.toJson()),
+  );
 
   @override
   Future<GroupResult> setGroup(SetStateCommand command, {List<String>? ids}) async =>
       GroupResult.fromJson(
-          await _call('POST', 'api/group/state', body: {...command.toJson(), 'ids': ?ids}));
+        await _call('POST', 'api/group/state', body: {...command.toJson(), 'ids': ?ids}),
+      );
 
   @override
-  Future<Light> rename(String id, String name) async => _light(
-      await _call('PATCH', 'api/lights/${Uri.encodeComponent(id)}', body: {'name': name}));
+  Future<Light> rename(String id, String name) async =>
+      _light(await _call('PATCH', 'api/lights/${Uri.encodeComponent(id)}', body: {'name': name}));
 
   @override
   Future<({int added, List<Light> lights})> discover() async {
-    final json = await _call('POST', 'api/discover',
-        body: const <String, Object?>{}, timeout: const Duration(seconds: 20));
+    final json = await _call(
+      'POST',
+      'api/discover',
+      body: const <String, Object?>{},
+      timeout: const Duration(seconds: 20),
+    );
     return (added: (json['added'] as num?)?.toInt() ?? 0, lights: lightsFromJson(json['lights']));
   }
 
@@ -79,8 +85,12 @@ class HttpBridgeClient implements LightsApi {
   Light _light(Map<String, Object?> json) =>
       Light.fromJson((json['light'] as Map).cast<String, Object?>());
 
-  Future<Map<String, Object?>> _call(String method, String path,
-      {Object? body, Duration? timeout}) async {
+  Future<Map<String, Object?>> _call(
+    String method,
+    String path, {
+    Object? body,
+    Duration? timeout,
+  }) async {
     final request = http.Request(method, baseUrl.resolve(path));
     final token = _token;
     if (token != null) request.headers['authorization'] = 'Bearer $token';
@@ -91,13 +101,15 @@ class HttpBridgeClient implements LightsApi {
     final http.Response response;
     try {
       response = await http.Response.fromStream(
-          await _client.send(request).timeout(timeout ?? this.timeout));
+        await _client.send(request).timeout(timeout ?? this.timeout),
+      );
     } on TimeoutException {
       throw BridgeException('The bridge at ${baseUrl.host} did not respond in time.');
     } on http.ClientException catch (e) {
       if (e.message.toLowerCase().contains('cleartext')) {
         throw const BridgeException(
-            'Plain http:// addresses are blocked. Use the https:// address of your bridge.');
+          'Plain http:// addresses are blocked. Use the https:// address of your bridge.',
+        );
       }
       throw BridgeException('Cannot reach the bridge at ${baseUrl.host}: ${e.message}');
     } catch (e) {

@@ -17,7 +17,10 @@ class SettingsScreen extends StatelessWidget {
     try {
       final added = await controller.discover();
       if (context.mounted) {
-        _snack(context, added == 0 ? 'No new lights found' : 'Found $added new light${added == 1 ? '' : 's'}');
+        _snack(
+          context,
+          added == 0 ? 'No new lights found' : 'Found $added new light${added == 1 ? '' : 's'}',
+        );
       }
     } on BridgeException catch (e) {
       if (context.mounted) _snack(context, e.message);
@@ -51,11 +54,13 @@ class SettingsScreen extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.router_outlined),
                 title: const Text('Bridge'),
-                subtitle: Text([
-                  controller.api.baseUrl.toString(),
-                  if (health != null) 'version ${health.version}',
-                  if (controller.error != null) 'not reachable',
-                ].join(' · ')),
+                subtitle: Text(
+                  [
+                    controller.api.baseUrl.toString(),
+                    if (health != null) 'version ${health.version}',
+                    if (controller.error != null) 'not reachable',
+                  ].join(' · '),
+                ),
                 trailing: TextButton(onPressed: onChangeBridge, child: const Text('Change')),
               ),
               ListTile(
@@ -72,12 +77,14 @@ class SettingsScreen extends StatelessWidget {
               for (final light in controller.lights)
                 ListTile(
                   title: Text(light.name),
-                  subtitle: Text([
-                    light.online ? (light.ip ?? '') : 'offline',
-                    ?light.model,
-                    if (light.firmware != null) 'fw ${light.firmware}',
-                    if (light.rssi != null) '${light.rssi} dBm',
-                  ].where((s) => s.isNotEmpty).join(' · ')),
+                  subtitle: Text(
+                    [
+                      light.online ? (light.ip ?? '') : 'offline',
+                      ?light.model,
+                      if (light.firmware != null) 'fw ${light.firmware}',
+                      if (light.rssi != null) '${light.rssi} dBm',
+                    ].where((s) => s.isNotEmpty).join(' · '),
+                  ),
                   trailing: IconButton(
                     tooltip: 'Rename',
                     icon: const Icon(Icons.edit_outlined),
@@ -132,7 +139,10 @@ class _RenameDialogState extends State<_RenameDialog> {
       ),
       actions: [
         TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
-        FilledButton(onPressed: () => Navigator.of(context).pop(_text.text), child: const Text('Save')),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(_text.text),
+          child: const Text('Save'),
+        ),
       ],
     );
   }

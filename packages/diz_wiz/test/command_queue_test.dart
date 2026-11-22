@@ -35,8 +35,10 @@ void main() {
       if (key == 'bad') throw const WizTimeoutException('nope');
     });
     await queue.submit('good', const SetStateCommand(on: true));
-    await expectLater(queue.submit('bad', const SetStateCommand(on: true)),
-        throwsA(isA<WizTimeoutException>()));
+    await expectLater(
+      queue.submit('bad', const SetStateCommand(on: true)),
+      throwsA(isA<WizTimeoutException>()),
+    );
     // The queue keeps working after a failure.
     await queue.submit('good', const SetStateCommand(on: false));
   });

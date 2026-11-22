@@ -64,9 +64,9 @@ class _DizAppState extends State<DizApp> {
   Uri? get _webOrigin => kIsWeb ? Uri.base.replace(path: '/', query: null, fragment: null) : null;
 
   ThemeData _theme(Brightness brightness) => ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFFFA000), brightness: brightness),
-        useMaterial3: true,
-      );
+    colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFFFA000), brightness: brightness),
+    useMaterial3: true,
+  );
 
   @override
   Widget build(BuildContext context) {

@@ -38,6 +38,11 @@ jobs:
       - name: Get dependencies (whole workspace)
         run: flutter pub get
 
+      # The page width is set in each package's analysis_options.yaml. To fix a
+      # failure, run `dart format .` at the repository root.
+      - name: Formatting
+        run: dart format --output=none --set-exit-if-changed .
+
       - name: Shared core
         working-directory: packages/diz_core
         run: |

@@ -43,7 +43,12 @@ class LightTile extends StatelessWidget {
 
 /// "All lights" card at the top of the list.
 class GroupTile extends StatelessWidget {
-  const GroupTile({super.key, required this.controller, required this.onTap, this.selected = false});
+  const GroupTile({
+    super.key,
+    required this.controller,
+    required this.onTap,
+    this.selected = false,
+  });
 
   final LightsController controller;
   final VoidCallback onTap;
@@ -71,7 +76,9 @@ class GroupTile extends StatelessWidget {
       ].join(' · '),
       switchValue: controller.anyOn,
       onToggle: online.isEmpty ? null : (on) => controller.setGroup(SetStateCommand(on: on)),
-      brightness: online.isEmpty || !controller.groupCapabilities.dimmable ? null : state?.brightness,
+      brightness: online.isEmpty || !controller.groupCapabilities.dimmable
+          ? null
+          : state?.brightness,
       onBrightness: (v) => controller.setGroup(SetStateCommand(brightness: v)),
       switchLabel: 'Turn all lights on or off',
       emphasized: true,
@@ -132,12 +139,16 @@ class _TileCard extends StatelessWidget {
                       children: [
                         Text(
                           title,
-                          style: emphasized ? theme.textTheme.titleMedium : theme.textTheme.bodyLarge,
+                          style: emphasized
+                              ? theme.textTheme.titleMedium
+                              : theme.textTheme.bodyLarge,
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
                           subtitle,
-                          style: theme.textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: scheme.onSurfaceVariant,
+                          ),
                         ),
                       ],
                     ),
@@ -186,14 +197,20 @@ class LightDot extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: lit ?? scheme.surfaceContainerHighest,
-        boxShadow: lit == null ? null : [BoxShadow(color: lit.withValues(alpha: 0.55), blurRadius: 14)],
+        boxShadow: lit == null
+            ? null
+            : [BoxShadow(color: lit.withValues(alpha: 0.55), blurRadius: 14)],
       ),
       child: Icon(
-        !online ? Icons.power_off_outlined : (icon ?? (lit == null ? Icons.lightbulb_outline : Icons.lightbulb)),
+        !online
+            ? Icons.power_off_outlined
+            : (icon ?? (lit == null ? Icons.lightbulb_outline : Icons.lightbulb)),
         size: 22,
         color: lit == null
             ? scheme.onSurfaceVariant
-            : (ThemeData.estimateBrightnessForColor(lit) == Brightness.dark ? Colors.white : Colors.black87),
+            : (ThemeData.estimateBrightnessForColor(lit) == Brightness.dark
+                  ? Colors.white
+                  : Colors.black87),
       ),
     );
   }

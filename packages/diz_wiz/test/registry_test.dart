@@ -11,12 +11,12 @@ void main() {
   late WizEndpoint endpoint;
 
   Registry newRegistry(LightStore store) => Registry(
-        transport: UdpWizTransport(),
-        store: store,
-        staticBulbs: [endpoint],
-        commandTimeout: const Duration(milliseconds: 60),
-        readTimeout: const Duration(milliseconds: 60),
-      );
+    transport: UdpWizTransport(),
+    store: store,
+    staticBulbs: [endpoint],
+    commandTimeout: const Duration(milliseconds: 60),
+    readTimeout: const Duration(milliseconds: 60),
+  );
 
   setUp(() async {
     bulb = FakeBulb(mac: 'a8bb50000001', moduleName: 'ESP56_SHTW3_01');

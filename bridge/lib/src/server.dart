@@ -20,57 +20,68 @@ Handler buildHandler(
   void Function(String message, bool isError)? logger,
 }) {
   final expectedToken = apiToken == null ? null : utf8.encode(apiToken);
-  final api = Router(notFoundHandler: (Request r) => _error(404, 'Unknown API route: ${r.method} /${r.url.path}'))
-    ..get('/api/health', (Request request) {
-      return _json(BridgeHealth(
-        name: 'diz-bridge',
-        version: bridgeVersion,
-        apiVersion: dizApiVersion,
-        lightCount: registry.count,
-      ).toJson());
-    })
-    ..get('/api/lights', (Request request) async {
-      final lights = await registry.refresh();
-      return _json({'lights': [for (final l in lights) l.toJson()]});
-    })
-    ..post('/api/lights/<id>/state', (Request request, String id) async {
-      final command = SetStateCommand.fromJson(await _body(request));
-      final problem = command.validate();
-      if (problem != null) return _error(400, problem);
-      final light = await registry.setState(id, command);
-      return _json({'light': light.toJson()});
-    })
-    ..patch('/api/lights/<id>', (Request request, String id) async {
-      final body = await _body(request);
-      final name = body['name'];
-      if (name is! String) return _error(400, 'name must be a string');
-      final light = await registry.rename(id, name);
-      return _json({'light': light.toJson()});
-    })
-    ..post('/api/group/state', (Request request) async {
-      final body = await _body(request);
-      final ids = body['ids'];
-      if (ids != null && (ids is! List || ids.any((i) => i is! String))) {
-        return _error(400, 'ids must be a list of light ids');
-      }
-      final command = SetStateCommand.fromJson(body);
-      final problem = command.validate();
-      if (problem != null) return _error(400, problem);
-      final result = await registry.setGroupState(command, ids: (ids as List?)?.cast<String>());
-      return _json(result.toJson());
-    })
-    ..post('/api/discover', (Request request) async {
-      final added = await registry.discover();
-      await registry.refresh();
-      return _json({'added': added, 'lights': [for (final l in registry.lights) l.toJson()]});
-    });
+  final api =
+      Router(
+          notFoundHandler: (Request r) =>
+              _error(404, 'Unknown API route: ${r.method} /${r.url.path}'),
+        )
+        ..get('/api/health', (Request request) {
+          return _json(
+            BridgeHealth(
+              name: 'diz-bridge',
+              version: bridgeVersion,
+              apiVersion: dizApiVersion,
+              lightCount: registry.count,
+            ).toJson(),
+          );
+        })
+        ..get('/api/lights', (Request request) async {
+          final lights = await registry.refresh();
+          return _json({
+            'lights': [for (final l in lights) l.toJson()],
+          });
+        })
+        ..post('/api/lights/<id>/state', (Request request, String id) async {
+          final command = SetStateCommand.fromJson(await _body(request));
+          final problem = command.validate();
+          if (problem != null) return _error(400, problem);
+          final light = await registry.setState(id, command);
+          return _json({'light': light.toJson()});
+        })
+        ..patch('/api/lights/<id>', (Request request, String id) async {
+          final body = await _body(request);
+          final name = body['name'];
+          if (name is! String) return _error(400, 'name must be a string');
+          final light = await registry.rename(id, name);
+          return _json({'light': light.toJson()});
+        })
+        ..post('/api/group/state', (Request request) async {
+          final body = await _body(request);
+          final ids = body['ids'];
+          if (ids != null && (ids is! List || ids.any((i) => i is! String))) {
+            return _error(400, 'ids must be a list of light ids');
+          }
+          final command = SetStateCommand.fromJson(body);
+          final problem = command.validate();
+          if (problem != null) return _error(400, problem);
+          final result = await registry.setGroupState(command, ids: (ids as List?)?.cast<String>());
+          return _json(result.toJson());
+        })
+        ..post('/api/discover', (Request request) async {
+          final added = await registry.discover();
+          await registry.refresh();
+          return _json({
+            'added': added,
+            'lights': [for (final l in registry.lights) l.toJson()],
+          });
+        });
 
   final Handler other = webRoot != null
       ? createStaticHandler(webRoot, defaultDocument: 'index.html')
       : (Request request) => Response.ok(
-            'diz-bridge $bridgeVersion is running. The API is at /api (try /api/lights).\n',
-            headers: {'content-type': 'text/plain; charset=utf-8'},
-          );
+          'diz-bridge $bridgeVersion is running. The API is at /api (try /api/lights).\n',
+          headers: {'content-type': 'text/plain; charset=utf-8'},
+        );
 
   Future<Response> root(Request request) async {
     final path = request.url.path;
@@ -112,14 +123,14 @@ Future<Map<String, Object?>> _body(Request request) async {
 }
 
 Response _json(Object body, {int status = 200, Map<String, String>? extraHeaders}) => Response(
-      status,
-      body: jsonEncode(body),
-      headers: {
-        'content-type': 'application/json; charset=utf-8',
-        'cache-control': 'no-store',
-        ...?extraHeaders,
-      },
-    );
+  status,
+  body: jsonEncode(body),
+  headers: {
+    'content-type': 'application/json; charset=utf-8',
+    'cache-control': 'no-store',
+    ...?extraHeaders,
+  },
+);
 
 final _bearer = RegExp(r'^Bearer\s+(\S+)\s*$', caseSensitive: false);
 
@@ -152,8 +163,8 @@ Middleware _cors() {
     'access-control-allow-headers': 'content-type, authorization',
   };
   return (inner) => (request) async {
-        if (request.method == 'OPTIONS') return Response.ok(null, headers: headers);
-        final response = await inner(request);
-        return response.change(headers: headers);
-      };
+    if (request.method == 'OPTIONS') return Response.ok(null, headers: headers);
+    final response = await inner(request);
+    return response.change(headers: headers);
+  };
 }

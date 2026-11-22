@@ -40,11 +40,11 @@ class SetStateCommand {
   }
 
   Map<String, Object?> toJson() => {
-        if (on != null) 'on': on,
-        if (brightness != null) 'brightness': brightness,
-        if (rgb != null) 'rgb': rgb!.toJson(),
-        if (kelvin != null) 'kelvin': kelvin,
-      };
+    if (on != null) 'on': on,
+    if (brightness != null) 'brightness': brightness,
+    if (rgb != null) 'rgb': rgb!.toJson(),
+    if (kelvin != null) 'kelvin': kelvin,
+  };
 
   bool get isEmpty => on == null && brightness == null && rgb == null && kelvin == null;
 
@@ -108,11 +108,11 @@ class SetStateCommand {
 
   /// Drops what a light can't do and clamps Kelvin to its range.
   SetStateCommand forCapabilities(Capabilities caps) => SetStateCommand(
-        on: on,
-        brightness: caps.dimmable ? brightness : null,
-        rgb: caps.color ? rgb : null,
-        kelvin: caps.tunableWhite && kelvin != null ? caps.clampKelvin(kelvin!) : null,
-      );
+    on: on,
+    brightness: caps.dimmable ? brightness : null,
+    rgb: caps.color ? rgb : null,
+    kelvin: caps.tunableWhite && kelvin != null ? caps.clampKelvin(kelvin!) : null,
+  );
 
   @override
   bool operator ==(Object other) =>

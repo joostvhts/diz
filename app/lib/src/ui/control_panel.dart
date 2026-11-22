@@ -50,7 +50,8 @@ class _ControlPanelState extends State<ControlPanel> {
             isGroup ? c.setGroup(command) : c.setLight(widget.target, command);
 
         final tabs = [if (caps.tunableWhite) _Tab.white, if (caps.color) _Tab.color];
-        var tab = _tab ??
+        var tab =
+            _tab ??
             (state?.mode == ColorMode.rgb && caps.color ? _Tab.color : null) ??
             (tabs.isEmpty ? null : tabs.first);
         if (!tabs.contains(tab)) tab = tabs.isEmpty ? null : tabs.first;
@@ -67,7 +68,11 @@ class _ControlPanelState extends State<ControlPanel> {
               Row(
                 children: [
                   Expanded(
-                    child: Text(title, style: theme.textTheme.titleLarge, overflow: TextOverflow.ellipsis),
+                    child: Text(
+                      title,
+                      style: theme.textTheme.titleLarge,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   Switch(
                     value: enabled && (state?.on ?? false),
@@ -95,7 +100,11 @@ class _ControlPanelState extends State<ControlPanel> {
                 ),
               if (caps.dimmable) ...[
                 const SizedBox(height: 16),
-                _SectionLabel(icon: Icons.brightness_6_outlined, text: 'Brightness', value: '$brightness%'),
+                _SectionLabel(
+                  icon: Icons.brightness_6_outlined,
+                  text: 'Brightness',
+                  value: '$brightness%',
+                ),
                 GradientSlider(
                   value: brightness,
                   min: minBrightness,
@@ -110,15 +119,24 @@ class _ControlPanelState extends State<ControlPanel> {
                 const SizedBox(height: 12),
                 SegmentedButton<_Tab>(
                   segments: const [
-                    ButtonSegment(value: _Tab.white, label: Text('White'), icon: Icon(Icons.wb_sunny_outlined)),
-                    ButtonSegment(value: _Tab.color, label: Text('Color'), icon: Icon(Icons.palette_outlined)),
+                    ButtonSegment(
+                      value: _Tab.white,
+                      label: Text('White'),
+                      icon: Icon(Icons.wb_sunny_outlined),
+                    ),
+                    ButtonSegment(
+                      value: _Tab.color,
+                      label: Text('Color'),
+                      icon: Icon(Icons.palette_outlined),
+                    ),
                   ],
                   selected: {tab!},
                   onSelectionChanged: (selection) => setState(() => _tab = selection.first),
                 ),
               ],
               const SizedBox(height: 16),
-              if (tab == _Tab.white) _WhiteControls(caps: caps, state: state, enabled: enabled, apply: apply),
+              if (tab == _Tab.white)
+                _WhiteControls(caps: caps, state: state, enabled: enabled, apply: apply),
               if (tab == _Tab.color) _ColorControls(state: state, enabled: enabled, apply: apply),
             ],
           ),
@@ -129,7 +147,12 @@ class _ControlPanelState extends State<ControlPanel> {
 }
 
 class _WhiteControls extends StatelessWidget {
-  const _WhiteControls({required this.caps, required this.state, required this.enabled, required this.apply});
+  const _WhiteControls({
+    required this.caps,
+    required this.state,
+    required this.enabled,
+    required this.apply,
+  });
 
   final Capabilities caps;
   final LightState? state;
@@ -273,7 +296,10 @@ class _SectionLabel extends StatelessWidget {
           Icon(icon, size: 18, color: theme.colorScheme.onSurfaceVariant),
           const SizedBox(width: 8),
           Expanded(child: Text(text, style: theme.textTheme.labelLarge)),
-          Text(value, style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          Text(
+            value,
+            style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          ),
         ],
       ),
     );
